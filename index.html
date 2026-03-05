@@ -42,6 +42,13 @@
       background:linear-gradient(180deg,#070a0f 0%, #0b0f14 40%, #070a0f 100%);
       color:var(--text);
     }
+    
+    /* Prevent horizontal scrolling on phones */
+html, body{
+  width:100%;
+  max-width:100%;
+  overflow-x:clip; /* better than hidden, doesn't create weird scrollbars */
+}
 
     header{
       padding:18px 16px 10px;
