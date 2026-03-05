@@ -1,8 +1,7 @@
 /* sw.js - FIRS FINDER offline cache */
 
-const CACHE_NAME = "firs-finder-v1";
+const CACHE_NAME = "firs-finder-v2"; // <-- bump when you update files
 
-// IMPORTANT: keep paths relative so it works on GitHub Pages project sites
 const ASSETS = [
   "./",
   "./index.html",
@@ -26,39 +25,40 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Network-first for HTML (gets updates when online), cache-first for everything else
 self.addEventListener("fetch", (event) => {
   const req = event.request;
 
-  // Only handle GET
   if (req.method !== "GET") return;
 
+  // Best practice: treat navigations as HTML (covers home-screen launches)
+  const isNav = req.mode === "navigate";
   const accept = req.headers.get("accept") || "";
-  const isHTML = accept.includes("text/html");
+  const isHTML = isNav || accept.includes("text/html");
 
   if (isHTML) {
-    // Network first, fallback to cache
     event.respondWith(
       fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy));
+          return res;
+        })
+        .catch(() => caches.match("./index.html"))
+    );
+    return;
+  }
+
+  // Cache-first for assets
+  event.respondWith(
+    caches.match(req).then((cached) => {
+      if (cached) return cached;
+      return fetch(req)
         .then((res) => {
           const copy = res.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
           return res;
         })
-        .catch(() => caches.match(req).then((r) => r || caches.match("./index.html")))
-    );
-    return;
-  }
-
-  // Cache first for assets
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-      return fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-        return res;
-      });
+        .catch(() => caches.match("./index.html")) // last-resort fallback
     })
   );
 });
