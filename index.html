@@ -1,152 +1,3 @@
-<title>FIRS FINDER</title>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#000000">
-  <title>CFA FIRS Quick Finder (Unofficial)</title>
-  <style>
-    :root {
-      --bg:#0b0f14; --card:#111827; --muted:#9ca3af; --text:#e5e7eb; --accent:#ef4444;
-      --line:#1f2937; --good:#22c55e; --warn:#f59e0b;
-      --radius:14px;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-    }
-    body { margin:0; background:linear-gradient(180deg,#070a0f 0%, #0b0f14 40%, #070a0f 100%); color:var(--text); }
-    header { padding:18px 16px 10px; position:sticky; top:0; backdrop-filter: blur(10px);
-      background:rgba(11,15,20,0.72); border-bottom:1px solid var(--line); z-index:3; }
-    h1 { margin:0; font-size:18px; letter-spacing:0.2px; }
-    .sub { margin-top:6px; font-size:12px; color:var(--muted); line-height:1.35; }
-    .wrap { max-width:860px; margin:0 auto; padding:14px 14px 28px; }
-    .grid { display:grid; grid-template-columns: 1fr; gap:12px; }
-    @media (min-width: 860px) { .grid { grid-template-columns: 1.2fr 0.8fr; align-items:start; } }
-    .card { background:rgba(17,24,39,0.7); border:1px solid var(--line); border-radius:var(--radius); padding:14px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
-    label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
-    input, select, button, textarea {
-      width:100%; box-sizing:border-box;
-      background:#0b1220; color:var(--text);
-      border:1px solid #233047; border-radius:12px;
-      padding:12px 12px; font-size:16px;
-      outline:none;
-    }
-    input:focus, select:focus, textarea:focus { border-color: rgba(239,68,68,0.8); box-shadow:0 0 0 4px rgba(239,68,68,0.12); }
-    .row { display:flex; gap:10px; flex-wrap:wrap; }
-    .row > * { flex: 1 1 180px; }
-    button {
-      cursor:pointer; border:1px solid rgba(239,68,68,0.65);
-      background: linear-gradient(180deg, rgba(239,68,68,0.22), rgba(239,68,68,0.08));
-      font-weight:650;
-    }
-    button.secondary {
-      border-color:#2b3750;
-      background: linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
-      color: var(--text);
-    }
-    .pill { display:inline-flex; align-items:center; gap:6px; padding:6px 10px;
-      border:1px solid #2b3750; border-radius:999px; font-size:12px; color:var(--muted); }
-    .pill b { color:var(--text); font-weight:650; }
-    .results { margin-top:10px; display:flex; flex-direction:column; gap:10px; }
-    .result {
-      border:1px solid #263249; border-radius:12px; padding:12px;
-      background: rgba(11,18,32,0.7);
-    }
-    .code { font-size:18px; font-weight:800; letter-spacing:0.3px; }
-    .desc { margin-top:6px; color:var(--text); opacity:0.95; }
-    .score { margin-top:8px; color:var(--muted); font-size:12px; }
-    .hint { font-size:12px; color:var(--muted); line-height:1.4; }
-    .k { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
-    .tag { font-size:12px; color:#cbd5e1; border:1px solid #2b3750; padding:4px 8px; border-radius:999px; background:rgba(148,163,184,0.06); }
-    .warnbox {
-      border:1px solid rgba(245,158,11,0.45);
-      background: rgba(245,158,11,0.08);
-      border-radius:12px; padding:10px; color:#fde68a; font-size:12px; line-height:1.35;
-    }
-    .goodbox {
-      border:1px solid rgba(34,197,94,0.45);
-      background: rgba(34,197,94,0.08);
-      border-radius:12px; padding:10px; color:#bbf7d0; font-size:12px; line-height:1.35;
-    }
-    footer { margin-top:12px; color:var(--muted); font-size:12px; }
-    a { color:#93c5fd; }
-  </style>
-</head>
-<body>
-<header>
-  <div class="wrap" style="padding:0 14px;">
-    <h1>CFA FIRS Quick Finder <span class="pill" title="Not an official CFA tool"><b>Unofficial</b> guide</span></h1>
-    <div class="sub">
-      Type what you <b>found on scene</b> (not what you were paged to). Returns the most likely FIRS codes (3–5).<br/>
-      Add details like “injuries”, “trapped”, “steam”, “toast”, “&lt;1ha”, “gas smell”, “tree down”.
-    </div>
-  </div>
-</header>
-
-<div class="wrap">
-  <div class="grid">
-    <section class="card">
-      <div class="row">
-        <div>
-          <label for="q">Quick search</label>
-          <input id="q" autocomplete="off" placeholder="e.g. MVA with injuries, car fire, smoke alarm steam, small grass fire, gas smell" />
-          <div class="k" id="quickChips"></div>
-        </div>
-        <div>
-          <label for="limit">Show</label>
-          <select id="limit">
-            <option value="3">Top 3</option>
-            <option value="4">Top 4</option>
-            <option value="5" selected>Top 5</option>
-          </select>
-          <div style="height:10px"></div>
-          <button id="btnFind">Find codes</button>
-          <div style="height:10px"></div>
-          <button id="btnClear" class="secondary">Clear</button>
-        </div>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="warnbox">
-        <b>Reminder:</b> This is a guide only. The reporting member must confirm the correct FIRS “type of call” based on what was found on scene.
-      </div>
-
-      <div class="results" id="results"></div>
-
-      <footer>
-        Data source: the FIRS code list you provided. You can edit/extend the code list inside this file (search for <b>DATA</b>).
-      </footer>
-    </section>
-
-    <aside class="card">
-      <h2 style="margin:0 0 10px; font-size:14px; color:#cbd5e1;">Guided mode (fewer mistakes)</h2>
-      <div class="hint">Pick a scenario. Answer 2–3 questions. Get the most likely codes.</div>
-      <div style="height:10px"></div>
-
-      <label for="scenario">Scenario</label>
-      <select id="scenario">
-        <option value="">Select…</option>
-        <option value="mva">MVA / road crash</option>
-        <option value="alarm">Alarm / false alarm / investigation</option>
-        <option value="veg">Grass / vegetation fire</option>
-        <option value="structure">Structure fire / building incident</option>
-        <option value="haz">Hazard (gas, fuel spill, powerline)</option>
-        <option value="weather">Storm / tree down</option>
-      </select>
-
-      <div id="guided" style="margin-top:12px;"></div>
-
-      <div style="height:12px"></div>
-      <div class="goodbox">
-        <b>Sharing tip:</b> Save this page to your phone home screen. For brigade use, host it on a brigade website or GitHub Pages.
-      </div>
-    </aside>
-  </div>
-</div>
-
-<script>
 <!doctype html>
 <html lang="en">
 <head>
@@ -163,8 +14,7 @@
   <style>
     :root{
       --bg:#0b0f14; --card:#111827; --muted:#9ca3af; --text:#e5e7eb; --accent:#ef4444;
-      --line:#1f2937; --good:#22c55e; --warn:#f59e0b;
-      --radius:14px;
+      --line:#1f2937; --good:#22c55e; --warn:#f59e0b; --radius:14px;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
     }
     body{ margin:0; background:linear-gradient(180deg,#070a0f 0%, #0b0f14 40%, #070a0f 100%); color:var(--text); }
@@ -181,8 +31,7 @@
       width:100%; box-sizing:border-box;
       background:#0b1220; color:var(--text);
       border:1px solid #233047; border-radius:12px;
-      padding:12px 12px; font-size:16px;
-      outline:none;
+      padding:12px 12px; font-size:16px; outline:none;
     }
     input:focus, select:focus{ border-color: rgba(239,68,68,0.8); box-shadow:0 0 0 4px rgba(239,68,68,0.12); }
     .row{ display:flex; gap:10px; flex-wrap:wrap; }
@@ -214,7 +63,7 @@
     .tag{
       font-size:12px; color:#cbd5e1; border:1px solid #2b3750;
       padding:6px 10px; border-radius:999px; background:rgba(148,163,184,0.06);
-      cursor:pointer;
+      cursor:pointer; width:auto;
     }
     .warnbox{
       border:1px solid rgba(245,158,11,0.45);
@@ -234,6 +83,7 @@
       background: linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
       color: var(--text);
       flex:0 0 auto;
+      cursor:pointer;
     }
     .toast{
       position: fixed; left: 50%; transform: translateX(-50%);
@@ -266,6 +116,7 @@
           <input id="q" autocomplete="off" placeholder="e.g. car vs pole, alarm reset, small grass fire <1ha, gas smell, tree across road" />
           <div class="k" id="quickButtons"></div>
           <div class="k" id="quickChips"></div>
+          <div class="hint" id="status" style="margin-top:10px;"></div>
         </div>
         <div>
           <label for="limit">Show</label>
@@ -275,9 +126,9 @@
             <option value="5" selected>Top 5</option>
           </select>
           <div style="height:10px"></div>
-          <button id="btnFind">Find codes</button>
+          <button id="btnFind" type="button">Find codes</button>
           <div style="height:10px"></div>
-          <button id="btnClear" class="secondary">Clear</button>
+          <button id="btnClear" class="secondary" type="button">Clear</button>
         </div>
       </div>
 
@@ -327,15 +178,17 @@
 /* ============================
    RAW_CODE_LIST
    Paste the full code table text between the backticks.
+   IMPORTANT: Do not include any backticks (`) in the pasted text.
    ============================ */
-const RAW_CODE_TEXT = `
+const RAW_CODE_TEXT = String.raw`
 PASTE_FULL_CODE_LIST_HERE
 `;
 
 /* ============================
    Parse codes from RAW_CODE_TEXT
-   Expected format per line: "352 Vehicle accident – no injuries"
-   Also supports decimals: "352.1 Vehicle accident – with injuries"
+   Supports lines like:
+     352 Vehicle accident – no injuries
+     352.1 Vehicle accident – with injuries
    ============================ */
 function parseCodes(raw){
   const lines = (raw || "")
@@ -346,34 +199,29 @@ function parseCodes(raw){
   const out = [];
   const seen = new Set();
 
-  // Match: code at start, then description
-  // code: 3 digits, optional .digit(s)
-  const re = /^(\d{3}(?:\.\d+)?)\s+(.*)$/;
+  // forgiving match: code anywhere in line, then a separator, then description
+  const re = /(\d{3}(?:\.\d+)?)[\s\-–]+(.+)/;
 
   for (const line of lines){
     // skip obvious headers
     if (/^code\b/i.test(line)) continue;
     if (/^type of call\b/i.test(line)) continue;
     if (/^service delivery reporting\b/i.test(line)) continue;
+    if (/^firs codes/i.test(line)) continue;
 
     const m = line.match(re);
     if (!m) continue;
 
     const code = m[1];
-    let desc = m[2].trim();
+    let desc = (m[2] || "").trim().replace(/\s{2,}/g, " ");
 
-    // strip trailing junk
-    desc = desc.replace(/\s{2,}/g, " ");
+    if (!/^\d{3}(\.\d+)?$/.test(code)) continue;
+    if (!desc) continue;
 
-    const key = code + "|" + desc;
-    if (seen.has(code)) continue; // keep first occurrence per code
+    if (seen.has(code)) continue;
     seen.add(code);
 
-    out.push({
-      code,
-      desc,
-      kw: buildKeywords(code, desc)
-    });
+    out.push({ code, desc, kw: buildKeywords(code, desc) });
   }
 
   return out;
@@ -382,34 +230,29 @@ function parseCodes(raw){
 /* Build searchable keywords from description + a few smart extras */
 function buildKeywords(code, desc){
   const d = (desc || "").toLowerCase();
-  const kws = new Set();
+  const kws = new Set([code.toLowerCase()]);
 
-  // words from description
   d.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).forEach(w=>{
     if (w.length >= 3) kws.add(w);
   });
 
-  // targeted extras for common slang
+  // common operational slang helpers
   if (code.startsWith("35")) { kws.add("mva"); kws.add("crash"); kws.add("collision"); kws.add("rtc"); }
   if (code === "351") { kws.add("extrication"); kws.add("trapped"); kws.add("entrapment"); kws.add("jaws"); }
   if (code === "352") { kws.add("mva"); kws.add("no injuries"); }
   if (code === "352.1") { kws.add("mva"); kws.add("injuries"); kws.add("injured"); kws.add("patient"); }
-
   if (code === "623") { kws.add("alarm"); kws.add("afa"); kws.add("no fire"); kws.add("fip"); }
   if (code === "768") { kws.add("steam"); kws.add("shower"); kws.add("sauna"); }
   if (code === "756") { kws.add("toast"); kws.add("cooking"); kws.add("fumes"); }
   if (code === "621") { kws.add("smoke"); kws.add("smell"); kws.add("odour"); kws.add("investigation"); }
   if (code === "622") { kws.add("steam"); kws.add("fog"); kws.add("dust"); }
-
   if (code === "412") { kws.add("gas"); kws.add("lpg"); kws.add("leak"); }
   if (code === "447") { kws.add("co"); kws.add("carbon"); kws.add("monoxide"); }
-
   if (code === "435") { kws.add("powerline"); kws.add("wire"); kws.add("lines down"); }
   if (code === "533") { kws.add("storm"); kws.add("tree"); kws.add("wind"); }
   if (code === "511") { kws.add("flood"); kws.add("pump"); kws.add("water removal"); }
   if (code === "512") { kws.add("burst pipe"); kws.add("hydrant"); kws.add("leak"); }
   if (code === "513") { kws.add("smoke"); kws.add("odour"); kws.add("ventilate"); kws.add("ppv"); }
-
   if (code === "173") { kws.add("<1ha"); kws.add("small grass"); kws.add("roadside"); }
   if (code === "163") { kws.add(">1ha"); kws.add("large grass"); kws.add("paddock"); }
   if (code === "624") { kws.add("burn off"); kws.add("controlled"); kws.add("permit"); }
@@ -486,10 +329,8 @@ function scoreEntry(query, entry){
   let score = 0;
   const tokens = q.split(" ");
 
-  // direct code match
   if (tokens.includes(entry.code.toLowerCase()) || q === entry.code.toLowerCase()) score += 80;
 
-  // keyword list match
   for (const k of (entry.kw || [])){
     const kk = norm(k);
     if (!kk) continue;
@@ -502,7 +343,6 @@ function scoreEntry(query, entry){
     }
   }
 
-  // targeted boosts (reduce common mistakes)
   const code = entry.code;
   if (q.includes("steam") && code === "768") score += 30;
   if (q.includes("toast") && (code === "756" || code === "121")) score += 26;
@@ -521,8 +361,8 @@ function scoreEntry(query, entry){
   return score;
 }
 
-function findCodes(CODES, query, limit=5){
-  const scored = CODES
+function findCodes(list, query, limit=5){
+  const scored = list
     .map(e => ({...e, _score: scoreEntry(query, e)}))
     .filter(e => e._score > 0)
     .sort((a,b) => b._score - a._score);
@@ -620,9 +460,11 @@ function setQuickButtons(){
 /* Build full code list at runtime */
 const ALL_CODES = parseCodes(RAW_CODE_TEXT);
 
-/* If you forget to paste the code list, fail loudly */
-if (!ALL_CODES.length){
-  console.warn("No codes parsed. Paste full code list into RAW_CODE_TEXT.");
+/* Status line for troubleshooting */
+const statusEl = document.getElementById("status");
+if (statusEl){
+  statusEl.textContent = `Parsed codes: ${ALL_CODES.length}`;
+  if (!ALL_CODES.length) statusEl.textContent += " (paste full list into RAW_CODE_LIST)";
 }
 
 function goFind(){
@@ -632,7 +474,7 @@ function goFind(){
   renderResults(items);
 }
 
-/* wire up UI */
+/* Wire up UI */
 document.getElementById("btnFind").addEventListener("click", goFind);
 document.getElementById("btnClear").addEventListener("click", () => {
   document.getElementById("q").value = "";
@@ -663,9 +505,7 @@ setChips([
   "powerline down"
 ]);
 
-/* ----------------------------
-   Guided mode (kept; uses goFind via query strings)
-   ---------------------------- */
+/* Guided mode */
 function guidedUI(scenario){
   const host = document.getElementById("guided");
   host.innerHTML = "";
@@ -725,21 +565,14 @@ function guidedUI(scenario){
       {v:"yes", t:"Yes"},
       {v:"unk", t:"Unknown"}
     ]);
-    const spill = makeQ("mva_spill", "Fuel/oil spill requiring management?", [
-      {v:"no", t:"No"},
-      {v:"minor", t:"Yes, minor (≤200L)"},
-      {v:"major", t:"Yes, major (≥201L)"}
-    ]);
     const update = () => {
       let q = "mva ";
       if (trapped.value === "yes") q += "trapped extrication ";
       if (injuries.value === "yes") q += "injuries ";
-      if (spill.value === "minor") q += "minor fuel spill ";
-      if (spill.value === "major") q += "major fuel spill ";
-      if (!trapped.value && !injuries.value && !spill.value) q += "vehicle accident";
+      if (!trapped.value && !injuries.value) q += "vehicle accident";
       show(q);
     };
-    injuries.onchange = trapped.onchange = spill.onchange = update;
+    injuries.onchange = trapped.onchange = update;
   }
 
   if (scenario === "alarm"){
@@ -774,28 +607,12 @@ function guidedUI(scenario){
       {v:"large", t:"> 1 hectare"},
       {v:"unk", t:"Unknown"}
     ]);
-    const mix = makeQ("v_mix", "Vegetation type", [
-      {v:"grass", t:"Grass"},
-      {v:"mix", t:"Scrub/bush + grass mix"},
-      {v:"mulch", t:"Mulch/woodchip (roadside/median)"}
-    ]);
-    const burn = makeQ("v_burn", "Was it a burn-off?", [
-      {v:"no", t:"No / uncontrolled vegetation fire"},
-      {v:"controlled", t:"Yes, controlled burning"},
-      {v:"unauth", t:"Unauthorised burning"}
-    ]);
     const update = () => {
-      let q = "";
-      if (burn.value === "controlled") q = "controlled burn off";
-      else if (burn.value === "unauth") q = "unauthorised burning";
-      else{
-        if (mix.value === "mulch") q = "mulch fire";
-        else if (mix.value === "mix") q = (area.value === "large") ? "scrub bush >1ha" : "scrub bush <1ha";
-        else q = (area.value === "large") ? "grass >1ha" : "grass <1ha";
-      }
+      let q = (area.value === "large") ? "grass fire >1ha" : "small grass fire <1ha";
+      if (!area.value) q = "grass fire";
       show(q);
     };
-    area.onchange = mix.onchange = burn.onchange = update;
+    area.onchange = update;
   }
 
   if (scenario === "structure"){
@@ -804,53 +621,39 @@ function guidedUI(scenario){
       {v:"no", t:"No (building/contents involved)"},
       {v:"unk", t:"Unknown"}
     ]);
-    const which = makeQ("s_which", "Most relevant", [
-      {v:"toast", t:"Cooking equipment / foodstuffs"},
-      {v:"chim", t:"Chimney/flue"},
-      {v:"building", t:"Building fire"}
-    ]);
     const update = () => {
-      let q = "building fire";
-      if (confined.value === "yes"){
-        if (which.value === "chim") q = "chimney";
-        else q = "toast";
-      }
+      let q = (confined.value === "yes") ? "toast" : "building fire";
+      if (!confined.value) q = "building fire";
       show(q);
     };
-    confined.onchange = which.onchange = update;
+    confined.onchange = update;
   }
 
   if (scenario === "haz"){
     const type = makeQ("h_type", "Hazard type", [
       {v:"gas", t:"Gas smell / LPG leak"},
       {v:"co", t:"Carbon monoxide alarm"},
-      {v:"spill", t:"Fuel/oil spill"},
-      {v:"power", t:"Powerline down / electrical hazard"}
-    ]);
-    const spill = makeQ("h_spill", "If spill: size", [
-      {v:"", t:"(only if spill)"},
-      {v:"minor", t:"Minor (≤200L)"},
-      {v:"major", t:"Major (≥201L)"}
+      {v:"power", t:"Powerline down / electrical hazard"},
+      {v:"spill", t:"Fuel/oil spill"}
     ]);
     const update = () => {
       let q = "";
       if (type.value === "gas") q = "gas smell";
       else if (type.value === "co") q = "carbon monoxide";
       else if (type.value === "power") q = "powerline down";
-      else if (type.value === "spill") q = (spill.value === "major") ? "major fuel spill" : "fuel spill";
+      else if (type.value === "spill") q = "fuel spill";
       show(q);
     };
-    type.onchange = spill.onchange = update;
+    type.onchange = update;
   }
 
   if (scenario === "weather"){
     const what = makeQ("w_what", "Most relevant", [
       {v:"tree", t:"Tree/branch across road"},
-      {v:"roof", t:"Roof damage / wind damage"},
       {v:"general", t:"General severe weather"}
     ]);
     const update = () => {
-      let q = (what.value === "general") ? "severe weather" : "tree down wind storm";
+      let q = (what.value === "general") ? "severe weather" : "tree across road";
       show(q);
     };
     what.onchange = update;
@@ -859,11 +662,7 @@ function guidedUI(scenario){
 
 document.getElementById("scenario").addEventListener("change", (e) => guidedUI(e.target.value));
 
-/* initial empty state */
 renderResults([]);
-</script>
-</body>
-</html>
 </script>
 </body>
 </html>
