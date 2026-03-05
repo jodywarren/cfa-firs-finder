@@ -47,7 +47,24 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html, body { width: 100%; }
+/* --- Mobile width safety (no sideways scroll, no clipped content) --- */
+*, *::before, *::after { box-sizing: border-box; }
 
+html, body { width: 100%; max-width: 100%; overflow-x: clip; }
+
+/* Flex/grid children can shrink (prevents page blowouts) */
+.row > * { min-width: 0; }
+.result { min-width: 0; flex-wrap: wrap; }
+.left { min-width: 0; }
+.desc, .hint, .sub { overflow-wrap: anywhere; word-break: break-word; }
+
+/* Tabs may scroll horizontally, but only inside themselves */
+.tabs { max-width: 100%; overflow-x: auto; }
+
+/* Chips can wrap normally */
+.chips { max-width: 100%; }
+.tag { max-width: 100%; white-space: normal; }
+.tabs .tag { white-space: nowrap; }
 /* Prevent layout blowouts without chopping content */
 .wrap, .card { max-width: 100%; }
 
