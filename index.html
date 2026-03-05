@@ -181,7 +181,335 @@
    IMPORTANT: Do not include any backticks (`) in the pasted text.
    ============================ */
 const RAW_CODE_TEXT = String.raw`
-PASTE_FULL_CODE_LIST_HERE
+Code Type of Call
+Type of incident undetermined
+000 Type of incident undetermined
+008 Type of incident not reported due to industrial/political action
+Fire and Explosions
+Fire or Explosion
+100 Fire or Explosion; insuff info to classify
+107 Wood chip / mulch fire – roadside, median strip, playground, etc (for bulk storage use
+141)
+108 Railway track sleeper fire
+109 Fire or explosion not classified
+Building fire; building only or building and contents
+110 Building fire; insuff info to classify
+111 Fire damaging structure and contents
+112 Fire damaging structure only
+113 Fire damaging contents only
+119 Building fire not classified
+Fire in building confined within non-combustible container with no other flame damage
+120 Fire in building confined within non-combustible container with no other flame damage;
+insuff info to classify
+121 Foodstuffs burnt, confined to cooking equipment
+122 Chimney or flue fire – confined
+123 Incinerator fire – confined
+124 Oil burner delayed ignition, malfunction or misuse – confined
+125 Compactor fire – confined to rubbish
+126 Refuse can or wastebasket fire – confined to rubbish within non-combustible rubbish
+bin
+129 Fire in building confined within non-combustible container with no other flame damage
+not classified
+Special Structure Fires
+130 Special structure or outside equipment fire; insuff info to classify
+131 Pier, quay, or piling fire
+132 Tunnel, underground fire, including pipelines
+133 Bridge, trestle, overhead elevated structure fire
+134 Transformer, power or utility vault, utility equipment fire and power pole fire
+135 Fence fire
+136 Air supported structure fire or tent fire
+137 Oil refinery fire
+138 Outside cooking equipment fire, includes BBQs, spit roaster, etc for uncontrolled fires
+only
+139 Special structure or outside equipment fire not classified
+139.1 Solar panel fire
+139.2 Gas bottle fire
+Outside storage fire, not rubbish
+140 Outside storage fire, not rubbish; insuff info to classify
+141 Outside storage fire, not rubbish
+142 Storage yards including timber yards, tyres, etc
+143 Stock fodder fire (includes hay bales or rolls, hay stacks, etc)
+144 Fertilizer fire (bulk storage)
+149 Outside storage fire, not rubbish not classified
+Vehicle Fires
+150 Vehicle fire; insuff info to classify
+151 Passenger vehicle fire including buses
+152 Road or transport vehicle fire
+153 Rail vehicle fire
+154 Water vessel fire
+155 Aircraft fire
+156 Camper, caravan or rec. vehicle fire (not on blocks or used as a building)
+157 Off-road vehicles or mobile equipment fire
+159 Vehicle fire not classified
+Vegetation and other Outside Fires
+160 Vegetation or other outside fire (more than one hectare); insuff info to classify
+161 Forest or woods fire (more than one hectare)
+162 Scrub or bush and grass mixture fire (more than one hectare)
+163 Grass fire (more than one hectare)
+164 Cultivated grain or crop fire (more than one hectare)
+165 Cultivated orchard or vineyard fire (more than one hectare)
+166 Cultivated trees or nursery stock fire, including hedges (more than one hectare)
+169 Vegetation or other outside fire (more than one hectare) not classified
+Small Vegetation Fire
+170 Vegetation or other outside fire (one hectare or less); insuff info to classify
+171 Forest or wood fire (one hectare or less)
+172 Scrub or bush and grass mixture fire (one hectare or less)
+173 Small grass fire (one hectare or less)
+174 Cultivated grain or crop fire (one hectare or less)
+175 Cultivated orchard or vineyard fire (one hectare or less)
+176 Cultivated trees or nursery stock fire, including hedges (one hectare or less)
+179 Vegetation or other outside fire (one hectare or less) not classified
+Outside Rubbish Fire
+180 Outside refuse fire; insuff info to classify
+181 Abandoned outside rubbish, refuse or waste fire
+182 Garbage dump or sanitary landfill fire
+183 Construction or demolition landfill fire
+184 Dumpster or other outside trash receptacle fire
+185 Outside stationary compactor or compacted trash fire
+189 Outside refuse fire not classified
+Explosions not as a result of Fire. If after Fire use 11-18
+190 Explosion not as a result of fire and without after-fire; insuff info to classify
+191 Munitions or bomb explosion
+192 Blasting agent explosion
+193 Fireworks explosion
+194 Incendiary device explosion
+195 Gas explosion
+196 Vapour explosion
+197 Explosion with ensuing fire
+199 Explosion not as a result of fire and without after-fire not classified
+Overpressure Rupture
+Overpressure Rupture Pipeline or Pipe
+210 Overpressure rupture of pipe or pipeline; insuff info to classify
+211 Overpressure rupture of pipe or pipeline; steam
+212 Overpressure rupture of pipe or pipeline; air or gas
+219 Overpressure rupture of pipe or pipeline; not classified
+Overpressure Rupture: Boiler
+220 Overpressure rupture of boiler; insuff info to classify
+221 Overpressure rupture of boiler; steam
+222 Overpressure rupture of boiler; air or gas
+229 Overpressure rupture of boiler; not classified
+Overpressure Rupture: Pressure Vessel
+230 Overpressure rupture of pressure vessel; insuff info to classify
+231 Overpressure rupture of pressure vessel; steam
+232 Overpressure rupture of pressure vessel; air or gas
+239 Overpressure rupture of pressure vessel; not classified
+MVA, Rescue, EMS Calls
+Rescue, EMS Calls: Other
+300 Rescue, EMS calls; insuff info to classify
+301 Animal Rescue
+309 Other Rescue Calls
+Medical Assistance
+310 Medical Assistance; insuff info to classify
+311 Medical Assistance with oxygen therapy
+312 Medical Assistance with CPR/EAR
+313 Medical Assistance
+319 Medical Assistance not classified
+EMS
+320 EMS; insuff info to classify
+321 EMS call, excluding vehicle accident with injury
+323 EM call where injured party left scene or transported prior to arrival
+329 EMS not classified
+Lock-Ins
+330 Lock-in; insuff info to classify
+331 Lock-in
+332 Lock-out
+339 Lock-in not classified
+Search
+340 Search; insuff info to classify
+341 Search
+342 Water Search
+349 Search not classified
+MVA, Extrications, Rescues
+350 Extrication, rescue; insuff info to classify
+351 Extrications of victim(s) from mobile property
+352 Vehicle accident – no injuries
+352.1 Vehicle accident – with injuries
+353 Removal of victim(s) from stalled elevator/escalator
+354 Extrication of victim(s) from mechanical equipment e.g. industrial, domestic and farm
+accidents
+355 Trench rescue
+356 Confined space rescue
+357 High angle and vertical rescue
+358 Extrication of victim(s) from building
+359 Extrication, rescue not classified
+Water and Ice Related Rescues
+360 Water and ice related rescues; insuff info to classify
+361 Drowning, near drowning
+362 Ice rescue
+363 Swift water rescue
+364 Surf rescue
+369 Water and ice related rescue not classified
+Electrocution
+371 Electrocution
+Rescue or EMS Standby
+381 Rescue or EMS standby
+Hazardous Condition
+Hazardous Condition: Other
+400 Hazardous condition; insuff info to classify
+401 Suspicious package or unknown substance
+409 Hazardous condition not classified
+Combustible/Flammable Spills and Leaks
+412 Odour or gas, gas leak (domestic or LPG)
+413 Oil or other combustible liquid spill
+414 Minor fuel or other flammable liquid spill/leak – 200 litres or less
+415 Major fuel or other flammable liquid spill/leak – 201 or more litres
+Explosives
+421 Explosive, bomb removal (for bomb scare use 628)
+Heat Related and Electrical
+430 Heat related and electrical; insuff info to classify
+431 Excessive heat, overheat, scorch burns with no ignition
+432 Heat from short circuit (wiring), defective or worn insulation
+433 Overheated motor
+434 Breakdown of light ballast
+435 Power line down
+436 Arcing, shorted electrical equipment
+439 Heat related and electrical not classified
+Other Hazardous Materials
+440 Hazardous materials, insuff info to classify
+441 Chemical hazard (no spill or leak)
+442 Chemical spill or leak (if combustible see 41 series)
+443 Radiation leak, radioactive material
+444 Refrigerant leak
+445 Hazardous fibres e.g. asbestos, carbon; no fire
+446 Unstable, reactive, explosive material
+447 Carbon monoxide incident
+449 Hazardous materials, not classified
+Miscellaneous Hazardous Situations
+450 Miscellaneous hazardous situations; insuff info to classify
+451 Attempt to burn
+452 Threat to burn
+453 Building weakened or collapsed
+459 Miscellaneous hazardous situations, not classified
+Aircraft incidents & emergencies
+460 Aircraft incidents or emergencies; insuff info to classify
+461 Aircraft crash, no fire
+462 Aircraft engine malfunction
+463 Aircraft undercarriage malfunction
+464 Aircraft hydraulic malfunction
+465 Aircraft wheels or brakes malfunction
+466 Aircraft radio malfunction
+467 Aircraft aborted take-off
+468 Bird strike on aircraft
+469 Aircraft incidents or emergencies not classified
+Biological Hazards
+471 Known biological hazard (e.g. medical waste, blood)
+Service Calls
+Service Calls: Other
+500 Other service call; insuff info to classify
+501 Defective elevator no occupants
+509 Other service call not classified (Public Service)
+Water and Smoke
+510 Water and smoke; insuff info to classify
+511 Water removal
+512 Water or steam leak (includes open hydrants)
+513 Smoke or odour removal
+514 Unauthorised burning
+519 Water and smoke not classified
+Assist Other Agencies
+520 Assist other agencies, insuff info to classify
+521 Assist police or other governmental agency
+522 Police matter
+523 Mutual aid given, coverage assignment, standby at fire station or move up
+523.1 Mutual Aid Given - MFB
+523.2 Mutual Aid Given – DELWP
+523.3 Mutual Aid Given – SES
+523.4 Mutual Aid Given – Interstate Fire Service
+523.5 Mutual Aid Given – FRV
+529 Assist other agencies, not classified
+Severe Weather and Natural Disaster. For incidents caused by these conditions use a
+more specific inc.
+530 Adverse weather or natural disaster; insuff info to classify
+531 Earthquake
+532 Flood
+533 Wind storm, including tornado, hurricane or cyclone
+534 Lightning strike (no fire)
+535 Severe weather or natural disaster
+539 Adverse weather or natural disaster not classified
+Other Assists
+544 Telecommunications lines down (including cable TV, telephone and the like)
+Good Intent Call
+Good Intent Call: Other
+600 Good intent call; insuff info to classify
+609 Good intent call not classified
+Location Related
+611 Wrong location
+612 Vicinity alarm (incident in other location). Included are separate locations reported for
+an actual fire.
+Investigations
+621 Smoke scare, odour of smoke
+622 Steam vapour, fog or dust thought to be smoke
+623 Alarm sounded – no evidence of fire
+624 Controlled burning
+625 Barbecue, hangi
+626 Burglar alarm ringing
+627 Suspicious package, harmless substance scare
+628 Bomb scare – no bomb, including parcel resembling bomb
+False Alarms and False Calls
+False Alarms and False Calls: Other
+700 False alarm or false call; insuff info to classify
+701 Manual control point or break glass alarm activated
+702 Alarm operated due to extreme weather – storm, lightning, heavy rain, thunder, flash
+flooding
+703 Alarm operated due to normal weather condition – open windows/doors – avoidable
+706 Council or water supply authority caused pressure surge through mains system
+707 Alarm operated due to power surge/spike or short circuit
+708 Building management reset fire alarm panel prior to arrival – cause unknown
+709 False alarm or false call not classified
+Malicious, Mischievous False Alarms
+711 Malicious, mischievous false alarm
+Bomb Scares
+721 Bomb scare – no bomb
+F/S Direct Linked, AFA Service Provider or Privately Monitored System Suspected
+Malfunction
+731 Sprinkler malfunction – monitored by fire service
+732 Smoke detector malfunction – monitored by fire service
+733 Heat detector malfunction – monitored by fire service
+734 Sprinkler malfunction – privately monitored
+735 Smoke detector malfunction – privately monitored
+736 Heat detector malfunction – privately monitored
+737 Fire indicator panel in normal condition on arrival
+738 Alarm system malfunction – flat battery, fault in wiring, alarm panel, inadequate
+maintenance
+739 Attending officer unable to locate detector indicated by fire alarm panel
+Suspected Alarm System Malfunctions
+741 Sprinkler malfunction – local
+742 Smoke detector malfunction – local
+743 Heat detector malfunction – local
+744 Gas detector suspected malfunction – local or non-monitored
+745 False alarm generated from private security firm – domestic premises
+746 False alarm generated from private security firm – commercial premises
+Simulated Conditions – No Fire
+751 Smoke detector operated – no fire – smoke from other location
+752 Heat detector operated – no fire – heat from other location
+753 Gas detector operated – no gas detected
+754 Detector operated – no fire – internal/within same floor/ compartment/smoke/heat
+755 Detector operated – no fire – external/not within same floor/ compartment/smoke/heat
+756 Cooking fumes – toast or foodstuffs, etc
+758 Simulated condition – caused by incense, candles, sparklers, smoke machine, etc
+759 Simulated condition, not classified above
+Unintentional Alarms – Not involving a Malfunction
+760 Unintentional alarm – not involving a malfunction; insuff info to classify
+761 Unintentional alarm – not a malfunction, included are turnout pagers
+762 Accidental operation of alarm
+763 Failure to notify of test
+764 Incorrect test by service or company personnel
+765 Alarm activation due to workmen or occupier activities
+766 Alarm activation due to poor building maintenance such as dust, cobwebs, etc
+767 Alarm activation due to aerosol, hair spray or insecticides
+768 Alarm activation due to steam, sauna, steam room
+769 Unintentional alarm – not involving a malfunction not classified
+Monitored Alarm System – Fire Indicator Panel
+770 Fire indicator panel; insuff info to classify
+771 Fire indicator panel not activated – ASE not activated
+772 Fire indicator panel activated – ASE or PPU not activated
+773 Fire indicator panel not activated – ASE or PPU activated
+779 Fire indicator panel not classified
+Other Situations
+Other Situations
+900 Other condition
+901 Cover assignment, standby at fire station
+Did Not Arrive – Called Off
+921 Dispatched and cancelled en-route
 `;
 
 /* ============================
