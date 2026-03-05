@@ -1,17 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8" />
 
   <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="mobile-web-app-capable" content="yes">
 
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FIRS FINDER</title>
+
+  <!-- LINE ~14 -->
   <meta name="theme-color" content="#000000" />
-<meta name="application-name" content="FIRS FINDER">
-<meta name="apple-mobile-web-app-title" content="FIRS FINDER">
-  
+  <meta name="application-name" content="FIRS FINDER">
+  <meta name="apple-mobile-web-app-title" content="FIRS FINDER">
+
   <link rel="icon" href="icon.png">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="manifest" href="manifest.json">
@@ -20,82 +22,234 @@
     :root{
       --bg:#0b0f14; --card:#111827; --muted:#9ca3af; --text:#e5e7eb; --accent:#ef4444;
       --line:#1f2937; --good:#22c55e; --warn:#f59e0b; --radius:14px;
+
+      /* READABILITY (slightly larger than your current version) */
+      --fs-h1: 20px;
+      --fs-sub: 13.5px;
+      --fs-label: 13px;
+      --fs-input: 17px;
+      --fs-tag: 13.5px;
+      --fs-code: 20px;
+      --fs-desc: 15.5px;
+      --fs-hint: 13.5px;
+
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
     }
-    body{ margin:0; background:linear-gradient(180deg,#070a0f 0%, #0b0f14 40%, #070a0f 100%); color:var(--text); }
-    header{ padding:18px 16px 10px; position:sticky; top:0; backdrop-filter: blur(10px);
-      background:rgba(11,15,20,0.72); border-bottom:1px solid var(--line); z-index:3; }
-    h1{ margin:0; font-size:18px; letter-spacing:0.2px; }
-    .sub{ margin-top:6px; font-size:12px; color:var(--muted); line-height:1.35; }
+
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#070a0f 0%, #0b0f14 40%, #070a0f 100%);
+      color:var(--text);
+    }
+
+    header{
+      padding:18px 16px 10px;
+      position:sticky; top:0;
+      backdrop-filter: blur(10px);
+      background:rgba(11,15,20,0.72);
+      border-bottom:1px solid var(--line);
+      z-index:3;
+    }
+
+    h1{
+      margin:0;
+      font-size:var(--fs-h1);
+      letter-spacing:0.2px;
+    }
+
+    .sub{
+      margin-top:6px;
+      font-size:var(--fs-sub);
+      color:var(--muted);
+      line-height:1.35;
+    }
+
     .wrap{ max-width:860px; margin:0 auto; padding:14px 14px 28px; }
     .grid{ display:grid; grid-template-columns: 1fr; gap:12px; }
     @media (min-width: 860px){ .grid{ grid-template-columns: 1.2fr 0.8fr; align-items:start; } }
-    .card{ background:rgba(17,24,39,0.7); border:1px solid var(--line); border-radius:var(--radius); padding:14px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
-    label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
-    input, select, button{
-      width:100%; box-sizing:border-box;
-      background:#0b1220; color:var(--text);
-      border:1px solid #233047; border-radius:12px;
-      padding:12px 12px; font-size:16px; outline:none;
+
+    .card{
+      background:rgba(17,24,39,0.7);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
     }
-    input:focus, select:focus{ border-color: rgba(239,68,68,0.8); box-shadow:0 0 0 4px rgba(239,68,68,0.12); }
+
+    label{
+      display:block;
+      font-size:var(--fs-label);
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    input, select, button{
+      width:100%;
+      box-sizing:border-box;
+      background:#0b1220;
+      color:var(--text);
+      border:1px solid #233047;
+      border-radius:12px;
+      padding:12px 12px;
+      font-size:var(--fs-input);
+      outline:none;
+    }
+
+    input:focus, select:focus{
+      border-color: rgba(239,68,68,0.8);
+      box-shadow:0 0 0 4px rgba(239,68,68,0.12);
+    }
+
     .row{ display:flex; gap:10px; flex-wrap:wrap; }
     .row > *{ flex: 1 1 180px; }
+
     button{
-      cursor:pointer; border:1px solid rgba(239,68,68,0.65);
+      cursor:pointer;
+      border:1px solid rgba(239,68,68,0.65);
       background: linear-gradient(180deg, rgba(239,68,68,0.22), rgba(239,68,68,0.08));
       font-weight:650;
     }
+
     button.secondary{
       border-color:#2b3750;
       background: linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
       color: var(--text);
     }
-    .pill{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px;
-      border:1px solid #2b3750; border-radius:999px; font-size:12px; color:var(--muted); }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px;
+      border:1px solid #2b3750;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      vertical-align:middle;
+    }
     .pill b{ color:var(--text); font-weight:650; }
+
     .results{ margin-top:10px; display:flex; flex-direction:column; gap:10px; }
+
     .result{
-      border:1px solid #263249; border-radius:12px; padding:12px;
+      border:1px solid #263249;
+      border-radius:12px;
+      padding:12px;
       background: rgba(11,18,32,0.7);
-      display:flex; gap:10px; align-items:flex-start; justify-content:space-between;
+      display:flex; gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
     }
+
     .left{ min-width:0; }
-    .code{ font-size:18px; font-weight:800; letter-spacing:0.3px; }
-    .desc{ margin-top:6px; color:var(--text); opacity:0.95; }
-    .hint{ font-size:12px; color:var(--muted); line-height:1.4; }
-    .k{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
-    .tag{
-      font-size:12px; color:#cbd5e1; border:1px solid #2b3750;
-      padding:6px 10px; border-radius:999px; background:rgba(148,163,184,0.06);
-      cursor:pointer; width:auto;
+
+    .code{
+      font-size:var(--fs-code);
+      font-weight:800;
+      letter-spacing:0.3px;
     }
+
+    .desc{
+      margin-top:6px;
+      font-size:var(--fs-desc);
+      color:var(--text);
+      opacity:0.95;
+    }
+
+    .hint{
+      font-size:var(--fs-hint);
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    /* QUICK TABS (scrollable row) */
+    .tabs{
+      display:flex;
+      flex-wrap:nowrap;
+      gap:8px;
+      margin-top:10px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom:6px;
+    }
+    .tabs::-webkit-scrollbar{ height:8px; }
+    .tabs::-webkit-scrollbar-thumb{ background:#223048; border-radius:999px; }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .tag{
+      font-size:var(--fs-tag);
+      color:#cbd5e1;
+      border:1px solid #2b3750;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(148,163,184,0.06);
+      cursor:pointer;
+      width:auto;
+      white-space:nowrap;
+      line-height:1.2;
+    }
+
     .warnbox{
       border:1px solid rgba(245,158,11,0.45);
       background: rgba(245,158,11,0.08);
-      border-radius:12px; padding:10px; color:#fde68a; font-size:12px; line-height:1.35;
+      border-radius:12px;
+      padding:10px;
+      color:#fde68a;
+      font-size:var(--fs-hint);
+      line-height:1.35;
     }
+
     .goodbox{
       border:1px solid rgba(34,197,94,0.45);
       background: rgba(34,197,94,0.08);
-      border-radius:12px; padding:10px; color:#bbf7d0; font-size:12px; line-height:1.35;
+      border-radius:12px;
+      padding:10px;
+      color:#bbf7d0;
+      font-size:var(--fs-hint);
+      line-height:1.35;
     }
-    footer{ margin-top:12px; color:var(--muted); font-size:12px; }
+
+    footer{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
 
     .btnCopy{
-      width:auto; padding:10px 12px; font-size:13px;
-      border-radius:10px; border:1px solid #2b3750;
+      width:auto;
+      padding:10px 12px;
+      font-size:14px;
+      border-radius:10px;
+      border:1px solid #2b3750;
       background: linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
       color: var(--text);
       flex:0 0 auto;
       cursor:pointer;
     }
+
     .toast{
       position: fixed; left: 50%; transform: translateX(-50%);
-      bottom: 16px; background: rgba(17,24,39,0.95); color: var(--text);
-      border: 1px solid #2b3750; border-radius: 12px; padding: 10px 12px;
-      font-size: 13px; display:none; z-index: 999;
+      bottom: 16px;
+      background: rgba(17,24,39,0.95);
+      color: var(--text);
+      border: 1px solid #2b3750;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      display:none;
+      z-index: 999;
       box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    .byline{
+      margin-top:8px;
+      font-size:12.5px;
+      color:var(--muted);
     }
   </style>
 </head>
@@ -103,11 +257,15 @@
 <body>
 <header>
   <div class="wrap" style="padding:0 14px;">
-    <h1>FIRS FINDER <span class="pill" title="Not an official CFA tool"><b>Unofficial</b> guide</span></h1>
+    <h1>
+      FIRS FINDER
+      <span class="pill" title="Not an official CFA tool"><b>Unofficial</b> guide</span>
+    </h1>
     <div class="sub">
       Type what you <b>found on scene</b> (not paged to). Returns the most likely FIRS codes (3–5).<br/>
       Try: “car vs pole”, “panel reset”, “burnt toast”, “steam”, “tree across road”, “gas smell”, “&lt;1ha”.
     </div>
+    <div class="byline">Created by <b>Jodie Tuuta</b></div>
   </div>
 </header>
 
@@ -119,10 +277,16 @@
         <div>
           <label for="q">Quick search</label>
           <input id="q" autocomplete="off" placeholder="e.g. car vs pole, alarm reset, small grass fire <1ha, gas smell, tree across road" />
-          <div class="k" id="quickButtons"></div>
-          <div class="k" id="quickChips"></div>
+
+          <!-- QUICK TABS -->
+          <div class="tabs" id="quickButtons"></div>
+
+          <!-- QUICK PHRASE CHIPS -->
+          <div class="chips" id="quickChips"></div>
+
           <div class="hint" id="status" style="margin-top:10px;"></div>
         </div>
+
         <div>
           <label for="limit">Show</label>
           <select id="limit">
@@ -146,12 +310,13 @@
       <div class="results" id="results"></div>
 
       <footer>
-        Full code list is parsed from the text block in this file (search for <b>RAW_CODE_LIST</b>).
+        Full code list is parsed from the text block in this file (search for <b>RAW_CODE_LIST</b>).<br/>
+        Created by <b>Jodie Tuuta</b> (unofficial tool).
       </footer>
     </section>
 
     <aside class="card">
-      <h2 style="margin:0 0 10px; font-size:14px; color:#cbd5e1;">Guided mode (fewer mistakes)</h2>
+      <h2 style="margin:0 0 10px; font-size:15px; color:#cbd5e1;">Guided mode (fewer mistakes)</h2>
       <div class="hint">Pick a scenario. Answer 2–3 questions. Get the most likely codes.</div>
       <div style="height:10px"></div>
 
@@ -182,7 +347,7 @@
 <script>
 /* ============================
    RAW_CODE_LIST
-   Paste the full code table text between the backticks.
+   Paste full code list between the backticks.
    IMPORTANT: Do not include any backticks (`) in the pasted text.
    ============================ */
 const RAW_CODE_TEXT = String.raw`
@@ -517,12 +682,7 @@ Did Not Arrive – Called Off
 921 Dispatched and cancelled en-route
 `;
 
-/* ============================
-   Parse codes from RAW_CODE_TEXT
-   Supports lines like:
-     352 Vehicle accident – no injuries
-     352.1 Vehicle accident – with injuries
-   ============================ */
+/* Parse codes from RAW_CODE_TEXT */
 function parseCodes(raw){
   const lines = (raw || "")
     .split(/\r?\n/)
@@ -532,11 +692,10 @@ function parseCodes(raw){
   const out = [];
   const seen = new Set();
 
-  // forgiving match: code anywhere in line, then a separator, then description
+  // forgiving match: code anywhere in line, then separator, then description
   const re = /(\d{3}(?:\.\d+)?)[\s\-–]+(.+)/;
 
   for (const line of lines){
-    // skip obvious headers
     if (/^code\b/i.test(line)) continue;
     if (/^type of call\b/i.test(line)) continue;
     if (/^service delivery reporting\b/i.test(line)) continue;
@@ -550,17 +709,15 @@ function parseCodes(raw){
 
     if (!/^\d{3}(\.\d+)?$/.test(code)) continue;
     if (!desc) continue;
-
     if (seen.has(code)) continue;
-    seen.add(code);
 
+    seen.add(code);
     out.push({ code, desc, kw: buildKeywords(code, desc) });
   }
 
   return out;
 }
 
-/* Build searchable keywords from description + a few smart extras */
 function buildKeywords(code, desc){
   const d = (desc || "").toLowerCase();
   const kws = new Set([code.toLowerCase()]);
@@ -569,7 +726,7 @@ function buildKeywords(code, desc){
     if (w.length >= 3) kws.add(w);
   });
 
-  // common operational slang helpers
+  // operational slang helpers
   if (code.startsWith("35")) { kws.add("mva"); kws.add("crash"); kws.add("collision"); kws.add("rtc"); }
   if (code === "351") { kws.add("extrication"); kws.add("trapped"); kws.add("entrapment"); kws.add("jaws"); }
   if (code === "352") { kws.add("mva"); kws.add("no injuries"); }
@@ -594,9 +751,7 @@ function buildKeywords(code, desc){
   return Array.from(kws);
 }
 
-/* ============================
-   Search improvements (messy text)
-   ============================ */
+/* Search improvements (messy text) */
 const SYN = [
   ["mva", ["rtc","crash","collision","car accident","vehicle accident","car vs","vehicle vs","t-bone","rear end","rollover"]],
   ["injuries", ["injured","patient","casualty","bleeding","unconscious"]],
@@ -615,18 +770,26 @@ const SYN = [
   ["powerline", ["power line down","lines down","wire down","live wires","powerline down"]],
 ];
 
+/* QUICK TABS (your request: MVA, scrub fire, grass fire etc) */
 const QUICK = [
   {label:"MVA", q:"mva"},
   {label:"MVA injuries", q:"mva injuries"},
   {label:"Extrication", q:"trapped extrication"},
+  {label:"Vehicle fire", q:"vehicle fire"},
+  {label:"Structure fire", q:"building fire"},
   {label:"Alarm", q:"alarm no fire"},
   {label:"Steam", q:"alarm steam"},
   {label:"Toast", q:"alarm toast"},
-  {label:"Grass <1ha", q:"small grass fire <1ha"},
-  {label:"Vehicle fire", q:"vehicle fire"},
   {label:"Smoke check", q:"smoke investigation"},
   {label:"Gas smell", q:"gas smell"},
+  {label:"Powerline", q:"powerline down"},
   {label:"Tree down", q:"tree across road"},
+  {label:"Grass <1ha", q:"small grass fire <1ha"},
+  {label:"Grass >1ha", q:"grass fire >1ha"},
+  {label:"Scrub/Bush <1ha", q:"scrub bush <1ha"},
+  {label:"Scrub/Bush >1ha", q:"scrub bush >1ha"},
+  {label:"Controlled burn", q:"controlled burn off"},
+  {label:"Unauthorised burn", q:"unauthorised burning"},
 ];
 
 function norm(s){
@@ -662,8 +825,10 @@ function scoreEntry(query, entry){
   let score = 0;
   const tokens = q.split(" ");
 
+  // direct code match
   if (tokens.includes(entry.code.toLowerCase()) || q === entry.code.toLowerCase()) score += 80;
 
+  // keyword match
   for (const k of (entry.kw || [])){
     const kk = norm(k);
     if (!kk) continue;
@@ -676,6 +841,7 @@ function scoreEntry(query, entry){
     }
   }
 
+  // targeted boosts
   const code = entry.code;
   if (q.includes("steam") && code === "768") score += 30;
   if (q.includes("toast") && (code === "756" || code === "121")) score += 26;
@@ -790,14 +956,13 @@ function setQuickButtons(){
   }
 }
 
-/* Build full code list at runtime */
 const ALL_CODES = parseCodes(RAW_CODE_TEXT);
 
-/* Status line for troubleshooting */
+/* Status line */
 const statusEl = document.getElementById("status");
 if (statusEl){
   statusEl.textContent = `Parsed codes: ${ALL_CODES.length}`;
-  if (!ALL_CODES.length) statusEl.textContent += " (paste full list into RAW_CODE_LIST)";
+  if (!ALL_CODES.length) statusEl.textContent += " (check RAW_CODE_LIST block)";
 }
 
 function goFind(){
@@ -813,11 +978,14 @@ document.getElementById("btnClear").addEventListener("click", () => {
   document.getElementById("q").value = "";
   renderResults([]);
 });
+
 document.getElementById("q").addEventListener("keydown", (e) => {
   if (e.key === "Enter") goFind();
 });
 
 setQuickButtons();
+
+/* Phrase chips (kept) */
 setChips([
   "car vs pole",
   "mva with injuries",
@@ -830,13 +998,15 @@ setChips([
   "burnt toast",
   "small grass fire <1ha",
   "grass fire >1ha",
+  "scrub bush <1ha",
+  "scrub bush >1ha",
   "burn off controlled",
   "unauthorised burning",
   "gas smell",
   "carbon monoxide alarm",
   "tree across road",
   "powerline down"
-]);
+]); 
 
 /* Guided mode */
 function guidedUI(scenario){
