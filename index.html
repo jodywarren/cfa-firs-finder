@@ -1,1181 +1,861 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FIRS FINDER</title>
-
-  <!-- LINE ~14 -->
-  <meta name="theme-color" content="#000000" />
-  <meta name="application-name" content="FIRS FINDER">
-  <meta name="apple-mobile-web-app-title" content="FIRS FINDER">
-
-  <link rel="icon" href="icon.png">
-  <link rel="apple-touch-icon" href="icon.png">
-  <link rel="manifest" href="manifest.json">
-
-  <style>
-    :root{
-      --bg:#0b0f14; --card:#111827; --muted:#9ca3af; --text:#e5e7eb; --accent:#ef4444;
-      --line:#1f2937; --good:#22c55e; --warn:#f59e0b; --radius:14px;
-
-      /* READABILITY (slightly larger than your current version) */
-      --fs-h1: 20px;
-      --fs-sub: 13.5px;
-      --fs-label: 13px;
-      --fs-input: 17px;
-      --fs-tag: 13.5px;
-      --fs-code: 20px;
-      --fs-desc: 15.5px;
-      --fs-hint: 13.5px;
-
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-    }
-
-    body{
-      margin:0;
-      background:linear-gradient(180deg,#070a0f 0%, #0b0f14 40%, #070a0f 100%);
-      color:var(--text);
-    }
-
-    header{
-      padding:18px 16px 10px;
-      position:sticky; top:0;
-      backdrop-filter: blur(10px);
-      background:rgba(11,15,20,0.72);
-      border-bottom:1px solid var(--line);
-      z-index:3;
-    }
-
-    h1{
-      margin:0;
-      font-size:var(--fs-h1);
-      letter-spacing:0.2px;
-    }
-
-    .sub{
-      margin-top:6px;
-      font-size:var(--fs-sub);
-      color:var(--muted);
-      line-height:1.35;
-    }
-
-    .wrap{ max-width:860px; margin:0 auto; padding:14px 14px 28px; }
-    .grid{ display:grid; grid-template-columns: 1fr; gap:12px; }
-    @media (min-width: 860px){ .grid{ grid-template-columns: 1.2fr 0.8fr; align-items:start; } }
-
-    .card{
-      background:rgba(17,24,39,0.7);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      padding:14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
-
-    label{
-      display:block;
-      font-size:var(--fs-label);
-      color:var(--muted);
-      margin-bottom:6px;
-    }
-
-    input, select, button{
-      width:100%;
-      box-sizing:border-box;
-      background:#0b1220;
-      color:var(--text);
-      border:1px solid #233047;
-      border-radius:12px;
-      padding:12px 12px;
-      font-size:var(--fs-input);
-      outline:none;
-    }
-
-    input:focus, select:focus{
-      border-color: rgba(239,68,68,0.8);
-      box-shadow:0 0 0 4px rgba(239,68,68,0.12);
-    }
-
-    .row{ display:flex; gap:10px; flex-wrap:wrap; }
-    .row > *{ flex: 1 1 180px; }
-
-    button{
-      cursor:pointer;
-      border:1px solid rgba(239,68,68,0.65);
-      background: linear-gradient(180deg, rgba(239,68,68,0.22), rgba(239,68,68,0.08));
-      font-weight:650;
-    }
-
-    button.secondary{
-      border-color:#2b3750;
-      background: linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
-      color: var(--text);
-    }
-
-    .pill{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px;
-      border:1px solid #2b3750;
-      border-radius:999px;
-      font-size:12px;
-      color:var(--muted);
-      vertical-align:middle;
-    }
-    .pill b{ color:var(--text); font-weight:650; }
-
-    .results{ margin-top:10px; display:flex; flex-direction:column; gap:10px; }
-
-    .result{
-      border:1px solid #263249;
-      border-radius:12px;
-      padding:12px;
-      background: rgba(11,18,32,0.7);
-      display:flex; gap:10px;
-      align-items:flex-start;
-      justify-content:space-between;
-    }
-
-    .left{ min-width:0; }
-
-    .code{
-      font-size:var(--fs-code);
-      font-weight:800;
-      letter-spacing:0.3px;
-    }
-
-    .desc{
-      margin-top:6px;
-      font-size:var(--fs-desc);
-      color:var(--text);
-      opacity:0.95;
-    }
-
-    .hint{
-      font-size:var(--fs-hint);
-      color:var(--muted);
-      line-height:1.4;
-    }
-
-    /* QUICK TABS (scrollable row) */
-    .tabs{
-      display:flex;
-      flex-wrap:nowrap;
-      gap:8px;
-      margin-top:10px;
-      overflow-x:auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom:6px;
-    }
-    .tabs::-webkit-scrollbar{ height:8px; }
-    .tabs::-webkit-scrollbar-thumb{ background:#223048; border-radius:999px; }
-
-    .chips{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:10px;
-    }
-
-    .tag{
-      font-size:var(--fs-tag);
-      color:#cbd5e1;
-      border:1px solid #2b3750;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(148,163,184,0.06);
-      cursor:pointer;
-      width:auto;
-      white-space:nowrap;
-      line-height:1.2;
-    }
-
-    .warnbox{
-      border:1px solid rgba(245,158,11,0.45);
-      background: rgba(245,158,11,0.08);
-      border-radius:12px;
-      padding:10px;
-      color:#fde68a;
-      font-size:var(--fs-hint);
-      line-height:1.35;
-    }
-
-    .goodbox{
-      border:1px solid rgba(34,197,94,0.45);
-      background: rgba(34,197,94,0.08);
-      border-radius:12px;
-      padding:10px;
-      color:#bbf7d0;
-      font-size:var(--fs-hint);
-      line-height:1.35;
-    }
-
-    footer{
-      margin-top:12px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
-    }
-
-    .btnCopy{
-      width:auto;
-      padding:10px 12px;
-      font-size:14px;
-      border-radius:10px;
-      border:1px solid #2b3750;
-      background: linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
-      color: var(--text);
-      flex:0 0 auto;
-      cursor:pointer;
-    }
-
-    .toast{
-      position: fixed; left: 50%; transform: translateX(-50%);
-      bottom: 16px;
-      background: rgba(17,24,39,0.95);
-      color: var(--text);
-      border: 1px solid #2b3750;
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 14px;
-      display:none;
-      z-index: 999;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-    }
-
-    .byline{
-      margin-top:8px;
-      font-size:12.5px;
-      color:var(--muted);
-    }
-  </style>
-</head>
-
-<body>
-<header>
-  <div class="wrap" style="padding:0 14px;">
-    <h1>
-      FIRS FINDER
-      <span class="pill" title="Not an official CFA tool"><b>Unofficial</b> guide</span>
-    </h1>
-    <div class="sub">
-      Type what you <b>found on scene</b> (not paged to). Returns the most likely FIRS codes (3–5).<br/>
-      Try: “car vs pole”, “panel reset”, “burnt toast”, “steam”, “tree across road”, “gas smell”, “&lt;1ha”.
-    </div>
-    <div class="byline">Created by <b>Jodie Tuuta</b></div>
-  </div>
-</header>
-
-<div class="wrap">
-  <div class="grid">
-
-    <section class="card">
-      <div class="row">
-        <div>
-          <label for="q">Quick search</label>
-          <input id="q" autocomplete="off" placeholder="e.g. car vs pole, alarm reset, small grass fire <1ha, gas smell, tree across road" />
-
-          <!-- QUICK TABS -->
-          <div class="tabs" id="quickButtons"></div>
-
-          <!-- QUICK PHRASE CHIPS -->
-          <div class="chips" id="quickChips"></div>
-
-          <div class="hint" id="status" style="margin-top:10px;"></div>
-        </div>
-
-        <div>
-          <label for="limit">Show</label>
-          <select id="limit">
-            <option value="3">Top 3</option>
-            <option value="4">Top 4</option>
-            <option value="5" selected>Top 5</option>
-          </select>
-          <div style="height:10px"></div>
-          <button id="btnFind" type="button">Find codes</button>
-          <div style="height:10px"></div>
-          <button id="btnClear" class="secondary" type="button">Clear</button>
-        </div>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="warnbox">
-        <b>Reminder:</b> Guide only. Reporting member confirms the correct “type of call” based on what was found on scene.
-      </div>
-
-      <div class="results" id="results"></div>
-
-      <footer>
-        Full code list is parsed from the text block in this file (search for <b>RAW_CODE_LIST</b>).<br/>
-        Created by <b>Jodie Tuuta</b> (unofficial tool).
-      </footer>
-    </section>
-
-    <aside class="card">
-      <h2 style="margin:0 0 10px; font-size:15px; color:#cbd5e1;">Guided mode (fewer mistakes)</h2>
-      <div class="hint">Pick a scenario. Answer 2–3 questions. Get the most likely codes.</div>
-      <div style="height:10px"></div>
-
-      <label for="scenario">Scenario</label>
-      <select id="scenario">
-        <option value="">Select…</option>
-        <option value="mva">MVA / road crash</option>
-        <option value="alarm">Alarm / false alarm / investigation</option>
-        <option value="veg">Grass / vegetation fire</option>
-        <option value="structure">Structure fire / building incident</option>
-        <option value="haz">Hazard (gas, fuel spill, powerline)</option>
-        <option value="weather">Storm / tree down</option>
-      </select>
-
-      <div id="guided" style="margin-top:12px;"></div>
-
-      <div style="height:12px"></div>
-      <div class="goodbox">
-        <b>Brigade use:</b> Share the link. Members “Add to Home screen”. Keep it unofficial and “guide only”.
-      </div>
-    </aside>
-
-  </div>
-</div>
-
-<div class="toast" id="toast">Copied</div>
-
-<script>
-/* ============================
-   RAW_CODE_LIST
-   Paste full code list between the backticks.
-   IMPORTANT: Do not include any backticks (`) in the pasted text.
-   ============================ */
-const RAW_CODE_TEXT = String.raw`
-Code Type of Call
-Type of incident undetermined
-000 Type of incident undetermined
-008 Type of incident not reported due to industrial/political action
-Fire and Explosions
-Fire or Explosion
-100 Fire or Explosion; insuff info to classify
-107 Wood chip / mulch fire – roadside, median strip, playground, etc (for bulk storage use
-141)
-108 Railway track sleeper fire
-109 Fire or explosion not classified
-Building fire; building only or building and contents
-110 Building fire; insuff info to classify
-111 Fire damaging structure and contents
-112 Fire damaging structure only
-113 Fire damaging contents only
-119 Building fire not classified
-Fire in building confined within non-combustible container with no other flame damage
-120 Fire in building confined within non-combustible container with no other flame damage;
-insuff info to classify
-121 Foodstuffs burnt, confined to cooking equipment
-122 Chimney or flue fire – confined
-123 Incinerator fire – confined
-124 Oil burner delayed ignition, malfunction or misuse – confined
-125 Compactor fire – confined to rubbish
-126 Refuse can or wastebasket fire – confined to rubbish within non-combustible rubbish
-bin
-129 Fire in building confined within non-combustible container with no other flame damage
-not classified
-Special Structure Fires
-130 Special structure or outside equipment fire; insuff info to classify
-131 Pier, quay, or piling fire
-132 Tunnel, underground fire, including pipelines
-133 Bridge, trestle, overhead elevated structure fire
-134 Transformer, power or utility vault, utility equipment fire and power pole fire
-135 Fence fire
-136 Air supported structure fire or tent fire
-137 Oil refinery fire
-138 Outside cooking equipment fire, includes BBQs, spit roaster, etc for uncontrolled fires
-only
-139 Special structure or outside equipment fire not classified
-139.1 Solar panel fire
-139.2 Gas bottle fire
-Outside storage fire, not rubbish
-140 Outside storage fire, not rubbish; insuff info to classify
-141 Outside storage fire, not rubbish
-142 Storage yards including timber yards, tyres, etc
-143 Stock fodder fire (includes hay bales or rolls, hay stacks, etc)
-144 Fertilizer fire (bulk storage)
-149 Outside storage fire, not rubbish not classified
-Vehicle Fires
-150 Vehicle fire; insuff info to classify
-151 Passenger vehicle fire including buses
-152 Road or transport vehicle fire
-153 Rail vehicle fire
-154 Water vessel fire
-155 Aircraft fire
-156 Camper, caravan or rec. vehicle fire (not on blocks or used as a building)
-157 Off-road vehicles or mobile equipment fire
-159 Vehicle fire not classified
-Vegetation and other Outside Fires
-160 Vegetation or other outside fire (more than one hectare); insuff info to classify
-161 Forest or woods fire (more than one hectare)
-162 Scrub or bush and grass mixture fire (more than one hectare)
-163 Grass fire (more than one hectare)
-164 Cultivated grain or crop fire (more than one hectare)
-165 Cultivated orchard or vineyard fire (more than one hectare)
-166 Cultivated trees or nursery stock fire, including hedges (more than one hectare)
-169 Vegetation or other outside fire (more than one hectare) not classified
-Small Vegetation Fire
-170 Vegetation or other outside fire (one hectare or less); insuff info to classify
-171 Forest or wood fire (one hectare or less)
-172 Scrub or bush and grass mixture fire (one hectare or less)
-173 Small grass fire (one hectare or less)
-174 Cultivated grain or crop fire (one hectare or less)
-175 Cultivated orchard or vineyard fire (one hectare or less)
-176 Cultivated trees or nursery stock fire, including hedges (one hectare or less)
-179 Vegetation or other outside fire (one hectare or less) not classified
-Outside Rubbish Fire
-180 Outside refuse fire; insuff info to classify
-181 Abandoned outside rubbish, refuse or waste fire
-182 Garbage dump or sanitary landfill fire
-183 Construction or demolition landfill fire
-184 Dumpster or other outside trash receptacle fire
-185 Outside stationary compactor or compacted trash fire
-189 Outside refuse fire not classified
-Explosions not as a result of Fire. If after Fire use 11-18
-190 Explosion not as a result of fire and without after-fire; insuff info to classify
-191 Munitions or bomb explosion
-192 Blasting agent explosion
-193 Fireworks explosion
-194 Incendiary device explosion
-195 Gas explosion
-196 Vapour explosion
-197 Explosion with ensuing fire
-199 Explosion not as a result of fire and without after-fire not classified
-Overpressure Rupture
-Overpressure Rupture Pipeline or Pipe
-210 Overpressure rupture of pipe or pipeline; insuff info to classify
-211 Overpressure rupture of pipe or pipeline; steam
-212 Overpressure rupture of pipe or pipeline; air or gas
-219 Overpressure rupture of pipe or pipeline; not classified
-Overpressure Rupture: Boiler
-220 Overpressure rupture of boiler; insuff info to classify
-221 Overpressure rupture of boiler; steam
-222 Overpressure rupture of boiler; air or gas
-229 Overpressure rupture of boiler; not classified
-Overpressure Rupture: Pressure Vessel
-230 Overpressure rupture of pressure vessel; insuff info to classify
-231 Overpressure rupture of pressure vessel; steam
-232 Overpressure rupture of pressure vessel; air or gas
-239 Overpressure rupture of pressure vessel; not classified
-MVA, Rescue, EMS Calls
-Rescue, EMS Calls: Other
-300 Rescue, EMS calls; insuff info to classify
-301 Animal Rescue
-309 Other Rescue Calls
-Medical Assistance
-310 Medical Assistance; insuff info to classify
-311 Medical Assistance with oxygen therapy
-312 Medical Assistance with CPR/EAR
-313 Medical Assistance
-319 Medical Assistance not classified
-EMS
-320 EMS; insuff info to classify
-321 EMS call, excluding vehicle accident with injury
-323 EM call where injured party left scene or transported prior to arrival
-329 EMS not classified
-Lock-Ins
-330 Lock-in; insuff info to classify
-331 Lock-in
-332 Lock-out
-339 Lock-in not classified
-Search
-340 Search; insuff info to classify
-341 Search
-342 Water Search
-349 Search not classified
-MVA, Extrications, Rescues
-350 Extrication, rescue; insuff info to classify
-351 Extrications of victim(s) from mobile property
-352 Vehicle accident – no injuries
-352.1 Vehicle accident – with injuries
-353 Removal of victim(s) from stalled elevator/escalator
-354 Extrication of victim(s) from mechanical equipment e.g. industrial, domestic and farm
-accidents
-355 Trench rescue
-356 Confined space rescue
-357 High angle and vertical rescue
-358 Extrication of victim(s) from building
-359 Extrication, rescue not classified
-Water and Ice Related Rescues
-360 Water and ice related rescues; insuff info to classify
-361 Drowning, near drowning
-362 Ice rescue
-363 Swift water rescue
-364 Surf rescue
-369 Water and ice related rescue not classified
-Electrocution
-371 Electrocution
-Rescue or EMS Standby
-381 Rescue or EMS standby
-Hazardous Condition
-Hazardous Condition: Other
-400 Hazardous condition; insuff info to classify
-401 Suspicious package or unknown substance
-409 Hazardous condition not classified
-Combustible/Flammable Spills and Leaks
-412 Odour or gas, gas leak (domestic or LPG)
-413 Oil or other combustible liquid spill
-414 Minor fuel or other flammable liquid spill/leak – 200 litres or less
-415 Major fuel or other flammable liquid spill/leak – 201 or more litres
-Explosives
-421 Explosive, bomb removal (for bomb scare use 628)
-Heat Related and Electrical
-430 Heat related and electrical; insuff info to classify
-431 Excessive heat, overheat, scorch burns with no ignition
-432 Heat from short circuit (wiring), defective or worn insulation
-433 Overheated motor
-434 Breakdown of light ballast
-435 Power line down
-436 Arcing, shorted electrical equipment
-439 Heat related and electrical not classified
-Other Hazardous Materials
-440 Hazardous materials, insuff info to classify
-441 Chemical hazard (no spill or leak)
-442 Chemical spill or leak (if combustible see 41 series)
-443 Radiation leak, radioactive material
-444 Refrigerant leak
-445 Hazardous fibres e.g. asbestos, carbon; no fire
-446 Unstable, reactive, explosive material
-447 Carbon monoxide incident
-449 Hazardous materials, not classified
-Miscellaneous Hazardous Situations
-450 Miscellaneous hazardous situations; insuff info to classify
-451 Attempt to burn
-452 Threat to burn
-453 Building weakened or collapsed
-459 Miscellaneous hazardous situations, not classified
-Aircraft incidents & emergencies
-460 Aircraft incidents or emergencies; insuff info to classify
-461 Aircraft crash, no fire
-462 Aircraft engine malfunction
-463 Aircraft undercarriage malfunction
-464 Aircraft hydraulic malfunction
-465 Aircraft wheels or brakes malfunction
-466 Aircraft radio malfunction
-467 Aircraft aborted take-off
-468 Bird strike on aircraft
-469 Aircraft incidents or emergencies not classified
-Biological Hazards
-471 Known biological hazard (e.g. medical waste, blood)
-Service Calls
-Service Calls: Other
-500 Other service call; insuff info to classify
-501 Defective elevator no occupants
-509 Other service call not classified (Public Service)
-Water and Smoke
-510 Water and smoke; insuff info to classify
-511 Water removal
-512 Water or steam leak (includes open hydrants)
-513 Smoke or odour removal
-514 Unauthorised burning
-519 Water and smoke not classified
-Assist Other Agencies
-520 Assist other agencies, insuff info to classify
-521 Assist police or other governmental agency
-522 Police matter
-523 Mutual aid given, coverage assignment, standby at fire station or move up
-523.1 Mutual Aid Given - MFB
-523.2 Mutual Aid Given – DELWP
-523.3 Mutual Aid Given – SES
-523.4 Mutual Aid Given – Interstate Fire Service
-523.5 Mutual Aid Given – FRV
-529 Assist other agencies, not classified
-Severe Weather and Natural Disaster. For incidents caused by these conditions use a
-more specific inc.
-530 Adverse weather or natural disaster; insuff info to classify
-531 Earthquake
-532 Flood
-533 Wind storm, including tornado, hurricane or cyclone
-534 Lightning strike (no fire)
-535 Severe weather or natural disaster
-539 Adverse weather or natural disaster not classified
-Other Assists
-544 Telecommunications lines down (including cable TV, telephone and the like)
-Good Intent Call
-Good Intent Call: Other
-600 Good intent call; insuff info to classify
-609 Good intent call not classified
-Location Related
-611 Wrong location
-612 Vicinity alarm (incident in other location). Included are separate locations reported for
-an actual fire.
-Investigations
-621 Smoke scare, odour of smoke
-622 Steam vapour, fog or dust thought to be smoke
-623 Alarm sounded – no evidence of fire
-624 Controlled burning
-625 Barbecue, hangi
-626 Burglar alarm ringing
-627 Suspicious package, harmless substance scare
-628 Bomb scare – no bomb, including parcel resembling bomb
-False Alarms and False Calls
-False Alarms and False Calls: Other
-700 False alarm or false call; insuff info to classify
-701 Manual control point or break glass alarm activated
-702 Alarm operated due to extreme weather – storm, lightning, heavy rain, thunder, flash
-flooding
-703 Alarm operated due to normal weather condition – open windows/doors – avoidable
-706 Council or water supply authority caused pressure surge through mains system
-707 Alarm operated due to power surge/spike or short circuit
-708 Building management reset fire alarm panel prior to arrival – cause unknown
-709 False alarm or false call not classified
-Malicious, Mischievous False Alarms
-711 Malicious, mischievous false alarm
-Bomb Scares
-721 Bomb scare – no bomb
-F/S Direct Linked, AFA Service Provider or Privately Monitored System Suspected
-Malfunction
-731 Sprinkler malfunction – monitored by fire service
-732 Smoke detector malfunction – monitored by fire service
-733 Heat detector malfunction – monitored by fire service
-734 Sprinkler malfunction – privately monitored
-735 Smoke detector malfunction – privately monitored
-736 Heat detector malfunction – privately monitored
-737 Fire indicator panel in normal condition on arrival
-738 Alarm system malfunction – flat battery, fault in wiring, alarm panel, inadequate
-maintenance
-739 Attending officer unable to locate detector indicated by fire alarm panel
-Suspected Alarm System Malfunctions
-741 Sprinkler malfunction – local
-742 Smoke detector malfunction – local
-743 Heat detector malfunction – local
-744 Gas detector suspected malfunction – local or non-monitored
-745 False alarm generated from private security firm – domestic premises
-746 False alarm generated from private security firm – commercial premises
-Simulated Conditions – No Fire
-751 Smoke detector operated – no fire – smoke from other location
-752 Heat detector operated – no fire – heat from other location
-753 Gas detector operated – no gas detected
-754 Detector operated – no fire – internal/within same floor/ compartment/smoke/heat
-755 Detector operated – no fire – external/not within same floor/ compartment/smoke/heat
-756 Cooking fumes – toast or foodstuffs, etc
-758 Simulated condition – caused by incense, candles, sparklers, smoke machine, etc
-759 Simulated condition, not classified above
-Unintentional Alarms – Not involving a Malfunction
-760 Unintentional alarm – not involving a malfunction; insuff info to classify
-761 Unintentional alarm – not a malfunction, included are turnout pagers
-762 Accidental operation of alarm
-763 Failure to notify of test
-764 Incorrect test by service or company personnel
-765 Alarm activation due to workmen or occupier activities
-766 Alarm activation due to poor building maintenance such as dust, cobwebs, etc
-767 Alarm activation due to aerosol, hair spray or insecticides
-768 Alarm activation due to steam, sauna, steam room
-769 Unintentional alarm – not involving a malfunction not classified
-Monitored Alarm System – Fire Indicator Panel
-770 Fire indicator panel; insuff info to classify
-771 Fire indicator panel not activated – ASE not activated
-772 Fire indicator panel activated – ASE or PPU not activated
-773 Fire indicator panel not activated – ASE or PPU activated
-779 Fire indicator panel not classified
-Other Situations
-Other Situations
-900 Other condition
-901 Cover assignment, standby at fire station
-Did Not Arrive – Called Off
-921 Dispatched and cancelled en-route
-`;
-
-/* Parse codes from RAW_CODE_TEXT */
-function parseCodes(raw){
-  const lines = (raw || "")
-    .split(/\r?\n/)
-    .map(l => l.trim())
-    .filter(Boolean);
-
-  const out = [];
-  const seen = new Set();
-
-  // forgiving match: code anywhere in line, then separator, then description
-  const re = /(\d{3}(?:\.\d+)?)[\s\-–]+(.+)/;
-
-  for (const line of lines){
-    if (/^code\b/i.test(line)) continue;
-    if (/^type of call\b/i.test(line)) continue;
-    if (/^service delivery reporting\b/i.test(line)) continue;
-    if (/^firs codes/i.test(line)) continue;
-
-    const m = line.match(re);
-    if (!m) continue;
-
-    const code = m[1];
-    let desc = (m[2] || "").trim().replace(/\s{2,}/g, " ");
-
-    if (!/^\d{3}(\.\d+)?$/.test(code)) continue;
-    if (!desc) continue;
-    if (seen.has(code)) continue;
-
-    seen.add(code);
-    out.push({ code, desc, kw: buildKeywords(code, desc) });
-  }
-
-  return out;
-}
-
-function buildKeywords(code, desc){
-  const d = (desc || "").toLowerCase();
-  const kws = new Set([code.toLowerCase()]);
-
-  d.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).forEach(w=>{
-    if (w.length >= 3) kws.add(w);
-  });
-
-  // operational slang helpers
-  if (code.startsWith("35")) { kws.add("mva"); kws.add("crash"); kws.add("collision"); kws.add("rtc"); }
-  if (code === "351") { kws.add("extrication"); kws.add("trapped"); kws.add("entrapment"); kws.add("jaws"); }
-  if (code === "352") { kws.add("mva"); kws.add("no injuries"); }
-  if (code === "352.1") { kws.add("mva"); kws.add("injuries"); kws.add("injured"); kws.add("patient"); }
-  if (code === "623") { kws.add("alarm"); kws.add("afa"); kws.add("no fire"); kws.add("fip"); }
-  if (code === "768") { kws.add("steam"); kws.add("shower"); kws.add("sauna"); }
-  if (code === "756") { kws.add("toast"); kws.add("cooking"); kws.add("fumes"); }
-  if (code === "621") { kws.add("smoke"); kws.add("smell"); kws.add("odour"); kws.add("investigation"); }
-  if (code === "622") { kws.add("steam"); kws.add("fog"); kws.add("dust"); }
-  if (code === "412") { kws.add("gas"); kws.add("lpg"); kws.add("leak"); }
-  if (code === "447") { kws.add("co"); kws.add("carbon"); kws.add("monoxide"); }
-  if (code === "435") { kws.add("powerline"); kws.add("wire"); kws.add("lines down"); }
-  if (code === "533") { kws.add("storm"); kws.add("tree"); kws.add("wind"); }
-  if (code === "511") { kws.add("flood"); kws.add("pump"); kws.add("water removal"); }
-  if (code === "512") { kws.add("burst pipe"); kws.add("hydrant"); kws.add("leak"); }
-  if (code === "513") { kws.add("smoke"); kws.add("odour"); kws.add("ventilate"); kws.add("ppv"); }
-  if (code === "173") { kws.add("<1ha"); kws.add("small grass"); kws.add("roadside"); }
-  if (code === "163") { kws.add(">1ha"); kws.add("large grass"); kws.add("paddock"); }
-  if (code === "624") { kws.add("burn off"); kws.add("controlled"); kws.add("permit"); }
-  if (code === "514") { kws.add("illegal"); kws.add("unauthorised"); kws.add("burning"); }
-
-  return Array.from(kws);
-}
-
-/* Search improvements (messy text) */
-const SYN = [
-  ["mva", ["rtc","crash","collision","car accident","vehicle accident","car vs","vehicle vs","t-bone","rear end","rollover"]],
-  ["injuries", ["injured","patient","casualty","bleeding","unconscious"]],
-  ["trapped", ["entrapped","entrapment","pinned","cannot exit","stuck in car","cut out","jaws","hydraulic rescue"]],
-  ["alarm", ["afa","fire alarm","fip","bga","building alarm","auto alarm","automatic alarm","panel"]],
-  ["reset", ["panel reset","reset before arrival","reset prior to arrival","reset on arrival"]],
-  ["steam", ["shower","sauna","steam room","steam"]],
-  ["toast", ["burnt toast","cooking fumes","burnt food","cooking smoke","toast"]],
-  ["smoke", ["smell of smoke","smoke sighted","smoke investigation","smoke scare","odour of smoke"]],
-  ["grass", ["roadside grass","paddock","grassfire","grass fire"]],
-  ["bush", ["scrub","gorse","bushfire","bush fire","bush/grass mix"]],
-  ["burnoff", ["burn off","burning off","burn-off","controlled burn","planned burn","permit burn"]],
-  ["gas", ["gas smell","odour of gas","lpg","gas leak"]],
-  ["co", ["carbon monoxide","co alarm","co detector"]],
-  ["tree", ["tree down","tree across","branch down","fallen tree","tree on road"]],
-  ["powerline", ["power line down","lines down","wire down","live wires","powerline down"]],
-];
-
-/* QUICK TABS (your request: MVA, scrub fire, grass fire etc) */
-const QUICK = [
-  {label:"MVA", q:"mva"},
-  {label:"MVA injuries", q:"mva injuries"},
-  {label:"Extrication", q:"trapped extrication"},
-  {label:"Vehicle fire", q:"vehicle fire"},
-  {label:"Structure fire", q:"building fire"},
-  {label:"Alarm", q:"alarm no fire"},
-  {label:"Steam", q:"alarm steam"},
-  {label:"Toast", q:"alarm toast"},
-  {label:"Smoke check", q:"smoke investigation"},
-  {label:"Gas smell", q:"gas smell"},
-  {label:"Powerline", q:"powerline down"},
-  {label:"Tree down", q:"tree across road"},
-  {label:"Grass <1ha", q:"small grass fire <1ha"},
-  {label:"Grass >1ha", q:"grass fire >1ha"},
-  {label:"Scrub/Bush <1ha", q:"scrub bush <1ha"},
-  {label:"Scrub/Bush >1ha", q:"scrub bush >1ha"},
-  {label:"Controlled burn", q:"controlled burn off"},
-  {label:"Unauthorised burn", q:"unauthorised burning"},
-];
-
-function norm(s){
-  return (s || "").toLowerCase()
-    .replace(/[^a-z0-9\.\s<>]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function expandQuery(q){
-  const base = norm(q);
-  if (!base) return "";
-  let out = base;
-
-  for (const [canon, alts] of SYN){
-    for (const a of alts){
-      const aa = norm(a);
-      if (aa && base.includes(aa) && !out.includes(canon)){
-        out += " " + canon;
-        break;
-      }
-    }
-  }
-  if ((base.includes("car vs") || base.includes("vehicle vs")) && !out.includes("mva")) out += " mva";
-  if (base.includes("panel") && base.includes("reset") && !out.includes("alarm")) out += " alarm no fire";
-  return out;
-}
-
-function scoreEntry(query, entry){
-  const q = expandQuery(query);
-  if (!q) return 0;
-
-  let score = 0;
-  const tokens = q.split(" ");
-
-  // direct code match
-  if (tokens.includes(entry.code.toLowerCase()) || q === entry.code.toLowerCase()) score += 80;
-
-  // keyword match
-  for (const k of (entry.kw || [])){
-    const kk = norm(k);
-    if (!kk) continue;
-    if (q.includes(kk)) score += 16;
-    else {
-      const kt = kk.split(" ");
-      let hits = 0;
-      for (const t of kt) if (tokens.includes(t)) hits++;
-      if (hits > 0) score += Math.min(12, hits * 4);
-    }
-  }
-
-  // targeted boosts
-  const code = entry.code;
-  if (q.includes("steam") && code === "768") score += 30;
-  if (q.includes("toast") && (code === "756" || code === "121")) score += 26;
-  if (q.includes("alarm") && q.includes("no fire") && code === "623") score += 28;
-  if (q.includes("smoke") && code === "621") score += 18;
-  if (q.includes("dust") && code === "622") score += 18;
-  if (q.includes("trapped") && code === "351") score += 32;
-  if (q.includes("injuries") && code === "352.1") score += 26;
-  if (q.includes("<1ha") && code === "173") score += 30;
-  if (q.includes(">1ha") && code === "163") score += 30;
-  if (q.includes("gas") && code === "412") score += 24;
-  if (q.includes("co") && code === "447") score += 24;
-  if (q.includes("tree") && code === "533") score += 18;
-  if (q.includes("powerline") && code === "435") score += 18;
-
-  return score;
-}
-
-function findCodes(list, query, limit=5){
-  const scored = list
-    .map(e => ({...e, _score: scoreEntry(query, e)}))
-    .filter(e => e._score > 0)
-    .sort((a,b) => b._score - a._score);
-
-  const seen = new Set();
-  const out = [];
-  for (const e of scored){
-    if (seen.has(e.code)) continue;
-    seen.add(e.code);
-    out.push(e);
-    if (out.length >= limit) break;
-  }
-  return out;
-}
-
-function toast(msg){
-  const t = document.getElementById("toast");
-  t.textContent = msg || "Copied";
-  t.style.display = "block";
-  clearTimeout(toast._timer);
-  toast._timer = setTimeout(()=>{ t.style.display = "none"; }, 1200);
-}
-
-async function copyText(text){
-  try{
-    await navigator.clipboard.writeText(text);
-    toast("Copied");
-  }catch(e){
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    ta.remove();
-    toast("Copied");
-  }
-}
-
-function renderResults(items){
-  const el = document.getElementById("results");
-  el.innerHTML = "";
-
-  if (!items.length){
-    el.innerHTML = `<div class="result">
-      <div class="left">
-        <div class="desc"><b>No matches yet.</b> Try: “mva”, “car vs pole”, “panel reset”, “burnt toast”, “steam”, “tree across road”, “gas smell”.</div>
-        <div class="hint">Tip: add qualifiers like “injuries”, “trapped”, “&lt;1ha”, “fuel spill”.</div>
-      </div>
-    </div>`;
-    return;
-  }
-
-  for (const it of items){
-    const line = `${it.code} – ${it.desc}`;
-    const div = document.createElement("div");
-    div.className = "result";
-    div.innerHTML = `
-      <div class="left">
-        <div class="code">${it.code}</div>
-        <div class="desc">${it.desc}</div>
-      </div>
-      <button class="btnCopy" type="button">Copy</button>
-    `;
-    div.querySelector(".btnCopy").onclick = () => copyText(line);
-    el.appendChild(div);
-  }
-}
-
-function setChips(chips){
-  const wrap = document.getElementById("quickChips");
-  wrap.innerHTML = "";
-  for (const c of chips){
-    const b = document.createElement("button");
-    b.className = "tag";
-    b.type = "button";
-    b.textContent = c;
-    b.onclick = () => { document.getElementById("q").value = c; goFind(); };
-    wrap.appendChild(b);
-  }
-}
-
-function setQuickButtons(){
-  const wrap = document.getElementById("quickButtons");
-  wrap.innerHTML = "";
-  for (const item of QUICK){
-    const b = document.createElement("button");
-    b.className = "tag";
-    b.type = "button";
-    b.textContent = item.label;
-    b.onclick = () => { document.getElementById("q").value = item.q; goFind(); };
-    wrap.appendChild(b);
-  }
-}
-
-const ALL_CODES = parseCodes(RAW_CODE_TEXT);
-
-/* Status line */
-const statusEl = document.getElementById("status");
-if (statusEl){
-  statusEl.textContent = `Parsed codes: ${ALL_CODES.length}`;
-  if (!ALL_CODES.length) statusEl.textContent += " (check RAW_CODE_LIST block)";
-}
-
-function goFind(){
-  const q = document.getElementById("q").value;
-  const limit = parseInt(document.getElementById("limit").value, 10);
-  const items = findCodes(ALL_CODES, q, limit);
-  renderResults(items);
-}
-
-/* Wire up UI */
-document.getElementById("btnFind").addEventListener("click", goFind);
-document.getElementById("btnClear").addEventListener("click", () => {
-  document.getElementById("q").value = "";
-  renderResults([]);
-});
-
-document.getElementById("q").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") goFind();
-});
-
-setQuickButtons();
-
-/* Phrase chips (kept) */
-setChips([
-  "car vs pole",
-  "mva with injuries",
-  "mva trapped",
-  "fuel spill on road",
-  "alarm sounding no fire",
-  "panel reset before arrival",
-  "smoke investigation",
-  "smoke alarm steam",
-  "burnt toast",
-  "small grass fire <1ha",
-  "grass fire >1ha",
-  "scrub bush <1ha",
-  "scrub bush >1ha",
-  "burn off controlled",
-  "unauthorised burning",
-  "gas smell",
-  "carbon monoxide alarm",
-  "tree across road",
-  "powerline down"
-]); 
-
-/* Guided mode */
-function guidedUI(scenario){
-  const host = document.getElementById("guided");
-  host.innerHTML = "";
-  if (!scenario) return;
-
-  const makeQ = (id, label, options) => {
-    const w = document.createElement("div");
-    w.style.marginBottom = "10px";
-    w.innerHTML = `<label for="${id}">${label}</label>`;
-    const s = document.createElement("select");
-    s.id = id;
-    s.innerHTML = `<option value="">Select…</option>` + options.map(o => `<option value="${o.v}">${o.t}</option>`).join("");
-    w.appendChild(s);
-    host.appendChild(w);
-    return s;
-  };
-
-  const out = document.createElement("div");
-  out.className = "results";
-  host.appendChild(out);
-
-  const renderInto = (container, items) => {
-    container.innerHTML = "";
-    if (!items.length){
-      container.innerHTML = `<div class="result"><div class="left"><div class="desc"><b>No guided match.</b> Use quick search instead.</div></div></div>`;
-      return;
-    }
-    for (const it of items){
-      const line = `${it.code} – ${it.desc}`;
-      const div = document.createElement("div");
-      div.className = "result";
-      div.innerHTML = `
-        <div class="left">
-          <div class="code">${it.code}</div>
-          <div class="desc">${it.desc}</div>
-        </div>
-        <button class="btnCopy" type="button">Copy</button>
-      `;
-      div.querySelector(".btnCopy").onclick = () => copyText(line);
-      container.appendChild(div);
-    }
-  };
-
-  const show = (query) => {
-    const items = findCodes(ALL_CODES, query, 5);
-    renderInto(out, items);
-  };
-
-  if (scenario === "mva"){
-    const injuries = makeQ("mva_inj", "Any injuries reported/observed?", [
-      {v:"no", t:"No"},
-      {v:"yes", t:"Yes / suspected"},
-      {v:"unk", t:"Unknown"}
-    ]);
-    const trapped = makeQ("mva_trap", "Any person trapped and needs extrication?", [
-      {v:"no", t:"No"},
-      {v:"yes", t:"Yes"},
-      {v:"unk", t:"Unknown"}
-    ]);
-    const update = () => {
-      let q = "mva ";
-      if (trapped.value === "yes") q += "trapped extrication ";
-      if (injuries.value === "yes") q += "injuries ";
-      if (!trapped.value && !injuries.value) q += "vehicle accident";
-      show(q);
-    };
-    injuries.onchange = trapped.onchange = update;
-  }
-
-  if (scenario === "alarm"){
-    const evidence = makeQ("a_evid", "Any evidence of fire (flame/charring/sustained ignition)?", [
-      {v:"no", t:"No"},
-      {v:"yes", t:"Yes"},
-      {v:"unk", t:"Unknown"}
-    ]);
-    const cause = makeQ("a_cause", "Most likely cause on scene", [
-      {v:"steam", t:"Steam/shower/sauna"},
-      {v:"toast", t:"Cooking fumes/toast"},
-      {v:"manual", t:"Break glass/manual call point"},
-      {v:"unknown", t:"Unknown/other"}
-    ]);
-    const update = () => {
-      let q = "alarm ";
-      if (evidence.value === "yes") q = "building fire";
-      else{
-        if (cause.value === "steam") q += "steam";
-        else if (cause.value === "toast") q += "toast";
-        else if (cause.value === "manual") q += "break glass";
-        else q += "no fire";
-      }
-      show(q);
-    };
-    evidence.onchange = cause.onchange = update;
-  }
-
-  if (scenario === "veg"){
-    const area = makeQ("v_area", "Estimated size", [
-      {v:"small", t:"≤ 1 hectare"},
-      {v:"large", t:"> 1 hectare"},
-      {v:"unk", t:"Unknown"}
-    ]);
-    const update = () => {
-      let q = (area.value === "large") ? "grass fire >1ha" : "small grass fire <1ha";
-      if (!area.value) q = "grass fire";
-      show(q);
-    };
-    area.onchange = update;
-  }
-
-  if (scenario === "structure"){
-    const confined = makeQ("s_conf", "Confined to container/equipment (no flame damage to structure)?", [
-      {v:"yes", t:"Yes (toast/pan/chimney confined)"},
-      {v:"no", t:"No (building/contents involved)"},
-      {v:"unk", t:"Unknown"}
-    ]);
-    const update = () => {
-      let q = (confined.value === "yes") ? "toast" : "building fire";
-      if (!confined.value) q = "building fire";
-      show(q);
-    };
-    confined.onchange = update;
-  }
-
-  if (scenario === "haz"){
-    const type = makeQ("h_type", "Hazard type", [
-      {v:"gas", t:"Gas smell / LPG leak"},
-      {v:"co", t:"Carbon monoxide alarm"},
-      {v:"power", t:"Powerline down / electrical hazard"},
-      {v:"spill", t:"Fuel/oil spill"}
-    ]);
-    const update = () => {
-      let q = "";
-      if (type.value === "gas") q = "gas smell";
-      else if (type.value === "co") q = "carbon monoxide";
-      else if (type.value === "power") q = "powerline down";
-      else if (type.value === "spill") q = "fuel spill";
-      show(q);
-    };
-    type.onchange = update;
-  }
-
-  if (scenario === "weather"){
-    const what = makeQ("w_what", "Most relevant", [
-      {v:"tree", t:"Tree/branch across road"},
-      {v:"general", t:"General severe weather"}
-    ]);
-    const update = () => {
-      let q = (what.value === "general") ? "severe weather" : "tree across road";
-      show(q);
-    };
-    what.onchange = update;
-  }
-}
-
-document.getElementById("scenario").addEventListener("change", (e) => guidedUI(e.target.value));
-
-renderResults([]);
-
-</script>
-
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js");
-  });
-}
-</script>
-
-</body>
-</html>
+001|<!doctype html>
+002|<html lang="en">
+003|<head>
+004|  <meta charset="utf-8" />
+005|  <meta name="viewport" content="width=device-width, initial-scale=1" />
+006|
+007|  <!-- PWA / iOS app mode -->
+008|  <meta name="apple-mobile-web-app-capable" content="yes" />
+009|  <meta name="mobile-web-app-capable" content="yes" />
+010|  <meta name="application-name" content="FIRS FINDER" />
+011|  <meta name="apple-mobile-web-app-title" content="FIRS FINDER" />
+012|  <meta name="theme-color" content="#000000" />
+013|
+014|  <title>FIRS FINDER</title>
+015|
+016|  <!-- Icons / manifest -->
+017|  <link rel="icon" href="icon.png" />
+018|  <link rel="apple-touch-icon" href="icon.png" />
+019|  <link rel="manifest" href="manifest.json" />
+020|
+021|  <style>
+022|    :root{
+023|      --bg:#0b0f14; --card:#111827; --muted:#9ca3af; --text:#e5e7eb; --accent:#ef4444;
+024|      --line:#1f2937; --good:#22c55e; --warn:#f59e0b; --radius:14px;
+025|
+026|      /* Readability (slightly larger) */
+027|      --fs-h1:20px;
+028|      --fs-sub:13.5px;
+029|      --fs-label:13px;
+030|      --fs-input:17px;
+031|      --fs-tag:13.5px;
+032|      --fs-code:20px;
+033|      --fs-desc:15.5px;
+034|      --fs-hint:13.5px;
+035|
+036|      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+037|                   "Apple Color Emoji", "Segoe UI Emoji";
+038|    }
+039|
+040|    body{
+041|      margin:0;
+042|      background:linear-gradient(180deg,#070a0f 0%, #0b0f14 40%, #070a0f 100%);
+043|      color:var(--text);
+044|    }
+045|
+046|    header{
+047|      padding:18px 16px 10px;
+048|      position:sticky; top:0;
+049|      backdrop-filter: blur(10px);
+050|      background:rgba(11,15,20,0.72);
+051|      border-bottom:1px solid var(--line);
+052|      z-index:3;
+053|    }
+054|
+055|    h1{
+056|      margin:0;
+057|      font-size:var(--fs-h1);
+058|      letter-spacing:0.2px;
+059|    }
+060|
+061|    .sub{
+062|      margin-top:6px;
+063|      font-size:var(--fs-sub);
+064|      color:var(--muted);
+065|      line-height:1.35;
+066|    }
+067|
+068|    .wrap{ max-width:860px; margin:0 auto; padding:14px 14px 28px; }
+069|    .grid{ display:grid; grid-template-columns: 1fr; gap:12px; }
+070|    @media (min-width: 860px){
+071|      .grid{ grid-template-columns: 1.2fr 0.8fr; align-items:start; }
+072|    }
+073|
+074|    .card{
+075|      background:rgba(17,24,39,0.7);
+076|      border:1px solid var(--line);
+077|      border-radius:var(--radius);
+078|      padding:14px;
+079|      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+080|    }
+081|
+082|    label{
+083|      display:block;
+084|      font-size:var(--fs-label);
+085|      color:var(--muted);
+086|      margin-bottom:6px;
+087|    }
+088|
+089|    input, select, button{
+090|      width:100%;
+091|      box-sizing:border-box;
+092|      background:#0b1220;
+093|      color:var(--text);
+094|      border:1px solid #233047;
+095|      border-radius:12px;
+096|      padding:12px 12px;
+097|      font-size:var(--fs-input);
+098|      outline:none;
+099|    }
+100|
+101|    input:focus, select:focus{
+102|      border-color: rgba(239,68,68,0.8);
+103|      box-shadow:0 0 0 4px rgba(239,68,68,0.12);
+104|    }
+105|
+106|    .row{ display:flex; gap:10px; flex-wrap:wrap; }
+107|    .row > *{ flex: 1 1 180px; }
+108|
+109|    button{
+110|      cursor:pointer;
+111|      border:1px solid rgba(239,68,68,0.65);
+112|      background: linear-gradient(180deg, rgba(239,68,68,0.22), rgba(239,68,68,0.08));
+113|      font-weight:650;
+114|    }
+115|
+116|    button.secondary{
+117|      border-color:#2b3750;
+118|      background: linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
+119|      color: var(--text);
+120|    }
+121|
+122|    .pill{
+123|      display:inline-flex; align-items:center; gap:6px;
+124|      padding:6px 10px;
+125|      border:1px solid #2b3750;
+126|      border-radius:999px;
+127|      font-size:12px;
+128|      color:var(--muted);
+129|      vertical-align:middle;
+130|    }
+131|    .pill b{ color:var(--text); font-weight:650; }
+132|
+133|    .results{ margin-top:10px; display:flex; flex-direction:column; gap:10px; }
+134|
+135|    .result{
+136|      border:1px solid #263249;
+137|      border-radius:12px;
+138|      padding:12px;
+139|      background: rgba(11,18,32,0.7);
+140|      display:flex; gap:10px;
+141|      align-items:flex-start;
+142|      justify-content:space-between;
+143|    }
+144|
+145|    .left{ min-width:0; }
+146|
+147|    .code{
+148|      font-size:var(--fs-code);
+149|      font-weight:800;
+150|      letter-spacing:0.3px;
+151|    }
+152|
+153|    .desc{
+154|      margin-top:6px;
+155|      font-size:var(--fs-desc);
+156|      color:var(--text);
+157|      opacity:0.95;
+158|    }
+159|
+160|    .hint{
+161|      font-size:var(--fs-hint);
+162|      color:var(--muted);
+163|      line-height:1.4;
+164|    }
+165|
+166|    /* Quick tabs: scrollable row */
+167|    .tabs{
+168|      display:flex;
+169|      flex-wrap:nowrap;
+170|      gap:8px;
+171|      margin-top:10px;
+172|      overflow-x:auto;
+173|      -webkit-overflow-scrolling: touch;
+174|      padding-bottom:6px;
+175|    }
+176|    .tabs::-webkit-scrollbar{ height:8px; }
+177|    .tabs::-webkit-scrollbar-thumb{ background:#223048; border-radius:999px; }
+178|
+179|    /* Quick phrase chips: wrap */
+180|    .chips{
+181|      display:flex;
+182|      flex-wrap:wrap;
+183|      gap:8px;
+184|      margin-top:10px;
+185|    }
+186|
+187|    .tag{
+188|      font-size:var(--fs-tag);
+189|      color:#cbd5e1;
+190|      border:1px solid #2b3750;
+191|      padding:8px 12px;
+192|      border-radius:999px;
+193|      background:rgba(148,163,184,0.06);
+194|      cursor:pointer;
+195|      width:auto;
+196|      white-space:nowrap;
+197|      line-height:1.2;
+198|    }
+199|
+200|    .warnbox{
+201|      border:1px solid rgba(245,158,11,0.45);
+202|      background: rgba(245,158,11,0.08);
+203|      border-radius:12px;
+204|      padding:10px;
+205|      color:#fde68a;
+206|      font-size:var(--fs-hint);
+207|      line-height:1.35;
+208|    }
+209|
+210|    .goodbox{
+211|      border:1px solid rgba(34,197,94,0.45);
+212|      background: rgba(34,197,94,0.08);
+213|      border-radius:12px;
+214|      padding:10px;
+215|      color:#bbf7d0;
+216|      font-size:var(--fs-hint);
+217|      line-height:1.35;
+218|    }
+219|
+220|    footer{
+221|      margin-top:12px;
+222|      color:var(--muted);
+223|      font-size:13px;
+224|      line-height:1.35;
+225|    }
+226|
+227|    .btnCopy{
+228|      width:auto;
+229|      padding:10px 12px;
+230|      font-size:14px;
+231|      border-radius:10px;
+232|      border:1px solid #2b3750;
+233|      background: linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
+234|      color: var(--text);
+235|      flex:0 0 auto;
+236|      cursor:pointer;
+237|    }
+238|
+239|    .toast{
+240|      position: fixed; left: 50%; transform: translateX(-50%);
+241|      bottom: 16px;
+242|      background: rgba(17,24,39,0.95);
+243|      color: var(--text);
+244|      border: 1px solid #2b3750;
+245|      border-radius: 12px;
+246|      padding: 10px 12px;
+247|      font-size: 14px;
+248|      display:none;
+249|      z-index: 999;
+250|      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+251|    }
+252|  </style>
+253|</head>
+254|
+255|<body>
+256|  <header>
+257|    <div class="wrap" style="padding:0 14px;">
+258|      <h1>
+259|        FIRS FINDER
+260|        <span class="pill" title="Not an official CFA tool"><b>Unofficial</b> guide</span>
+261|      </h1>
+262|      <div class="sub">
+263|        Type what you <b>found on scene</b> (not paged to). Returns the most likely FIRS codes (3–5).<br/>
+264|        Try: “car vs pole”, “panel reset”, “burnt toast”, “steam”, “tree across road”, “gas smell”, “&lt;1ha”.
+265|      </div>
+266|    </div>
+267|  </header>
+268|
+269|  <div class="wrap">
+270|    <div class="grid">
+271|
+272|      <section class="card">
+273|        <div class="row">
+274|          <div>
+275|            <label for="q">Quick search</label>
+276|            <input id="q" autocomplete="off"
+277|                   placeholder="e.g. car vs pole, alarm reset, small grass fire <1ha, gas smell, tree across road" />
+278|
+279|            <!-- Quick tabs -->
+280|            <div class="tabs" id="quickButtons"></div>
+281|
+282|            <!-- Quick phrase chips -->
+283|            <div class="chips" id="quickChips"></div>
+284|
+285|            <div class="hint" id="status" style="margin-top:10px;"></div>
+286|          </div>
+287|
+288|          <div>
+289|            <label for="limit">Show</label>
+290|            <select id="limit">
+291|              <option value="3">Top 3</option>
+292|              <option value="4">Top 4</option>
+293|              <option value="5" selected>Top 5</option>
+294|            </select>
+295|            <div style="height:10px"></div>
+296|            <button id="btnFind" type="button">Find codes</button>
+297|            <div style="height:10px"></div>
+298|            <button id="btnClear" class="secondary" type="button">Clear</button>
+299|          </div>
+300|        </div>
+301|
+302|        <div style="height:12px"></div>
+303|
+304|        <div class="warnbox">
+305|          <b>Reminder:</b> Guide only. Reporting member confirms the correct “type of call” based on what was found on scene.
+306|        </div>
+307|
+308|        <div class="results" id="results"></div>
+309|
+310|        <footer>
+311|          Full code list is parsed from the text block in this file (search for <b>RAW_CODE_LIST</b>).<br/>
+312|          Created by <b>Jodie Tuuta</b> (unofficial tool).
+313|        </footer>
+314|      </section>
+315|
+316|      <aside class="card">
+317|        <h2 style="margin:0 0 10px; font-size:15px; color:#cbd5e1;">Guided mode (fewer mistakes)</h2>
+318|        <div class="hint">Pick a scenario. Answer 2–3 questions. Get the most likely codes.</div>
+319|        <div style="height:10px"></div>
+320|
+321|        <label for="scenario">Scenario</label>
+322|        <select id="scenario">
+323|          <option value="">Select…</option>
+324|          <option value="mva">MVA / road crash</option>
+325|          <option value="alarm">Alarm / false alarm / investigation</option>
+326|          <option value="veg">Grass / vegetation fire</option>
+327|          <option value="structure">Structure fire / building incident</option>
+328|          <option value="haz">Hazard (gas, fuel spill, powerline)</option>
+329|          <option value="weather">Storm / tree down</option>
+330|        </select>
+331|
+332|        <div id="guided" style="margin-top:12px;"></div>
+333|
+334|        <div style="height:12px"></div>
+335|        <div class="goodbox">
+336|          <b>Brigade use:</b> Share the link. Members “Add to Home screen”. Keep it unofficial and “guide only”.
+337|        </div>
+338|      </aside>
+339|
+340|    </div>
+341|  </div>
+342|
+343|  <div class="toast" id="toast">Copied</div>
+344|
+345|  <script>
+346|    "use strict";
+347|
+348|    /* ----------------------------
+349|       Synonyms / query helpers
+350|       ---------------------------- */
+351|    const SYN = [
+352|      ["mva", ["rtc","crash","collision","car accident","vehicle accident","car vs","vehicle vs","t-bone","rear end","rollover"]],
+353|      ["injuries", ["injured","patient","casualty","bleeding","unconscious"]],
+354|      ["trapped", ["entrapped","entrapment","pinned","cannot exit","stuck in car","cut out","jaws","hydraulic rescue"]],
+355|      ["alarm", ["afa","fire alarm","fip","bga","building alarm","auto alarm","automatic alarm","panel"]],
+356|      ["reset", ["panel reset","reset before arrival","reset prior to arrival","reset on arrival"]],
+357|      ["steam", ["shower","sauna","steam room","steam"]],
+358|      ["toast", ["burnt toast","cooking fumes","burnt food","cooking smoke","toast"]],
+359|      ["smoke", ["smell of smoke","smoke sighted","smoke investigation","smoke scare","odour of smoke"]],
+360|      ["grass", ["roadside grass","paddock","grassfire","grass fire"]],
+361|      ["bush", ["scrub","gorse","bushfire","bush fire","bush/grass mix"]],
+362|      ["burnoff", ["burn off","burning off","burn-off","controlled burn","planned burn","permit burn"]],
+363|      ["gas", ["gas smell","odour of gas","lpg","gas leak"]],
+364|      ["co", ["carbon monoxide","co alarm","co detector"]],
+365|      ["tree", ["tree down","tree across","branch down","fallen tree","tree on road"]],
+366|      ["powerline", ["power line down","lines down","wire down","live wires","powerline down"]],
+367|    ];
+368|
+369|    /* ----------------------------
+370|       Quick tabs (scroll row)
+371|       ---------------------------- */
+372|    const QUICK = [
+373|      {label:"MVA", q:"mva"},
+374|      {label:"MVA injuries", q:"mva injuries"},
+375|      {label:"Extrication", q:"trapped extrication"},
+376|      {label:"Vehicle fire", q:"vehicle fire"},
+377|      {label:"Structure fire", q:"building fire"},
+378|      {label:"Alarm", q:"alarm no fire"},
+379|      {label:"Steam", q:"alarm steam"},
+380|      {label:"Toast", q:"alarm toast"},
+381|      {label:"Smoke check", q:"smoke investigation"},
+382|      {label:"Gas smell", q:"gas smell"},
+383|      {label:"Powerline", q:"powerline down"},
+384|      {label:"Tree down", q:"tree across road"},
+385|      {label:"Grass <1ha", q:"small grass fire <1ha"},
+386|      {label:"Grass >1ha", q:"grass fire >1ha"},
+387|      {label:"Scrub/Bush <1ha", q:"scrub bush <1ha"},
+388|      {label:"Scrub/Bush >1ha", q:"scrub bush >1ha"},
+389|      {label:"Controlled burn", q:"controlled burn off"},
+390|      {label:"Unauthorised burn", q:"unauthorised burning"},
+391|    ];
+392|
+393|    /* ----------------------------
+394|       Utilities
+395|       ---------------------------- */
+396|    function norm(s){
+397|      return (s || "").toLowerCase()
+398|        .replace(/[^a-z0-9\.\s<>]/g, " ")
+399|        .replace(/\s+/g, " ")
+400|        .trim();
+401|    }
+402|
+403|    function expandQuery(q){
+404|      const base = norm(q);
+405|      if (!base) return "";
+406|      let out = base;
+407|
+408|      for (const [canon, alts] of SYN){
+409|        for (const a of alts){
+410|          const aa = norm(a);
+411|          if (aa && base.includes(aa) && !out.includes(canon)){
+412|            out += " " + canon;
+413|            break;
+414|          }
+415|        }
+416|      }
+417|
+418|      if ((base.includes("car vs") || base.includes("vehicle vs")) && !out.includes("mva")) out += " mva";
+419|      if (base.includes("panel") && base.includes("reset") && !out.includes("alarm")) out += " alarm no fire";
+420|      return out;
+421|    }
+422|
+423|    function toast(msg){
+424|      const t = document.getElementById("toast");
+425|      if (!t) return;
+426|      t.textContent = msg || "Copied";
+427|      t.style.display = "block";
+428|      clearTimeout(toast._timer);
+429|      toast._timer = setTimeout(()=>{ t.style.display = "none"; }, 1200);
+430|    }
+431|
+432|    async function copyText(text){
+433|      try{
+434|        await navigator.clipboard.writeText(text);
+435|        toast("Copied");
+436|      }catch(_e){
+437|        const ta = document.createElement("textarea");
+438|        ta.value = text;
+439|        document.body.appendChild(ta);
+440|        ta.select();
+441|        document.execCommand("copy");
+442|        ta.remove();
+443|        toast("Copied");
+444|      }
+445|    }
+446|
+447|    /* ----------------------------
+448|       Parsing code list
+449|       ---------------------------- */
+450|    function parseCodes(raw){
+451|      const lines = (raw || "")
+452|        .split(/\r?\n/)
+453|        .map(l => l.trim())
+454|        .filter(Boolean);
+455|
+456|      const out = [];
+457|      const seen = new Set();
+458|
+459|      // forgiving: code then separator then description
+460|      const re = /(\d{3}(?:\.\d+)?)[\s\-–]+(.+)/;
+461|
+462|      for (const line of lines){
+463|        if (/^code\b/i.test(line)) continue;
+464|        if (/^type of call\b/i.test(line)) continue;
+465|        if (/^service delivery reporting\b/i.test(line)) continue;
+466|        if (/^firs codes/i.test(line)) continue;
+467|
+468|        const m = line.match(re);
+469|        if (!m) continue;
+470|
+471|        const code = m[1];
+472|        let desc = (m[2] || "").trim().replace(/\s{2,}/g, " ");
+473|
+474|        if (!/^\d{3}(\.\d+)?$/.test(code)) continue;
+475|        if (!desc) continue;
+476|        if (seen.has(code)) continue;
+477|
+478|        seen.add(code);
+479|        out.push({ code, desc, kw: buildKeywords(code, desc) });
+480|      }
+481|      return out;
+482|    }
+483|
+484|    function buildKeywords(code, desc){
+485|      const d = (desc || "").toLowerCase();
+486|      const kws = new Set([code.toLowerCase()]);
+487|
+488|      d.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).forEach(w=>{
+489|        if (w.length >= 3) kws.add(w);
+490|      });
+491|
+492|      // operational slang helpers
+493|      if (code.startsWith("35")) { kws.add("mva"); kws.add("crash"); kws.add("collision"); kws.add("rtc"); }
+494|      if (code === "351") { kws.add("extrication"); kws.add("trapped"); kws.add("entrapment"); kws.add("jaws"); }
+495|      if (code === "352") { kws.add("mva"); kws.add("no injuries"); }
+496|      if (code === "352.1") { kws.add("mva"); kws.add("injuries"); kws.add("injured"); kws.add("patient"); }
+497|      if (code === "623") { kws.add("alarm"); kws.add("afa"); kws.add("no fire"); kws.add("fip"); }
+498|      if (code === "768") { kws.add("steam"); kws.add("shower"); kws.add("sauna"); }
+499|      if (code === "756") { kws.add("toast"); kws.add("cooking"); kws.add("fumes"); }
+500|      
+501|      if (code === "621") { kws.add("smoke"); kws.add("investigation"); kws.add("smoke scare"); }
+502|      if (code === "622") { kws.add("steam"); kws.add("vapour"); kws.add("dust"); }
+503|
+504|      // vegetation helpers
+505|      if (code === "173") { kws.add("<1ha"); kws.add("small grass"); kws.add("roadside"); kws.add("grass"); }
+506|      if (code === "163") { kws.add(">1ha"); kws.add("large grass"); kws.add("paddock"); kws.add("grass"); }
+507|
+508|      if (code === "172") { kws.add("<1ha"); kws.add("small scrub"); kws.add("bush"); kws.add("scrub"); kws.add("bush mix"); }
+509|      if (code === "162") { kws.add(">1ha"); kws.add("large scrub"); kws.add("bush"); kws.add("scrub"); kws.add("bush mix"); }
+510|
+511|      if (code === "624") { kws.add("burnoff"); kws.add("controlled burn"); kws.add("permit burn"); }
+512|      if (code === "514") { kws.add("unauthorised"); kws.add("illegal burn"); kws.add("burning"); }
+513|
+514|      // hazard helpers
+515|      if (code === "412") { kws.add("gas"); kws.add("lpg"); kws.add("gas smell"); kws.add("gas leak"); }
+516|      if (code === "447") { kws.add("co"); kws.add("carbon monoxide"); kws.add("co alarm"); }
+517|      if (code === "435") { kws.add("powerline"); kws.add("wire down"); kws.add("lines down"); kws.add("power line"); }
+518|      if (code === "414") { kws.add("fuel spill"); kws.add("petrol"); kws.add("diesel"); kws.add("oil spill"); }
+519|
+520|      // weather helpers
+521|      if (code === "533") { kws.add("storm"); kws.add("wind"); kws.add("storm damage"); }
+522|      if (code === "544") { kws.add("telecom"); kws.add("cable down"); kws.add("phone line"); }
+523|
+524|      return Array.from(kws);
+525|    }
+526|
+527|    /* ----------------------------
+528|       Search scoring
+529|       ---------------------------- */
+530|    function score(query, rec){
+531|      const q = expandQuery(query);
+532|      if (!q) return 0;
+533|
+534|      const words = q.split(/\s+/);
+535|      let s = 0;
+536|
+537|      for (const w of words){
+538|        if (rec.kw.includes(w)) s += 2;
+539|        if (rec.desc.toLowerCase().includes(w)) s += 1;
+540|      }
+541|
+542|      if (q.includes(rec.code)) s += 5;
+543|
+544|      return s;
+545|    }
+546|
+547|    function findMatches(query, limit){
+548|      const q = expandQuery(query);
+549|      if (!q) return [];
+550|
+551|      const scored = CODES.map(c => ({
+552|        code: c.code,
+553|        desc: c.desc,
+554|        score: score(q, c)
+555|      }));
+556|
+557|      scored.sort((a,b)=> b.score - a.score);
+558|
+559|      return scored.filter(r => r.score > 0).slice(0, limit);
+560|    }
+561|
+562|    /* ----------------------------
+563|       UI rendering
+564|       ---------------------------- */
+565|    function renderResults(list){
+566|      const el = document.getElementById("results");
+567|      const status = document.getElementById("status");
+568|
+569|      el.innerHTML = "";
+570|
+571|      if (!list.length){
+572|        status.textContent = "No matches yet. Try different words.";
+573|        return;
+574|      }
+575|
+576|      status.textContent = list.length + " possible match(es).";
+577|
+578|      list.forEach(r=>{
+579|        const row = document.createElement("div");
+580|        row.className = "result";
+581|
+582|        const left = document.createElement("div");
+583|        left.className = "left";
+584|
+585|        const code = document.createElement("div");
+586|        code.className = "code";
+587|        code.textContent = r.code;
+588|
+589|        const desc = document.createElement("div");
+590|        desc.className = "desc";
+591|        desc.textContent = r.desc;
+592|
+593|        left.appendChild(code);
+594|        left.appendChild(desc);
+595|
+596|        const btn = document.createElement("button");
+597|        btn.className = "btnCopy";
+598|        btn.textContent = "Copy";
+599|        btn.onclick = () => copyText(r.code);
+600|
+601|        row.appendChild(left);
+602|        row.appendChild(btn);
+603|
+604|        el.appendChild(row);
+605|      });
+606|    }
+607|
+608|    /* ----------------------------
+609|       Quick buttons
+610|       ---------------------------- */
+611|    function setQuickButtons(){
+612|      const box = document.getElementById("quickButtons");
+613|      box.innerHTML = "";
+614|
+615|      QUICK.forEach(item=>{
+616|        const b = document.createElement("button");
+617|        b.className = "tag";
+618|        b.textContent = item.label;
+619|        b.onclick = ()=>{
+620|          document.getElementById("q").value = item.q;
+621|          runSearch();
+622|        };
+623|        box.appendChild(b);
+624|      });
+625|    }
+626|
+627|    /* ----------------------------
+628|       Phrase chips
+629|       ---------------------------- */
+630|    function setChips(list){
+631|      const box = document.getElementById("quickChips");
+632|      box.innerHTML = "";
+633|
+634|      list.forEach(text=>{
+635|        const t = document.createElement("button");
+636|        t.className = "tag";
+637|        t.textContent = text;
+638|        t.onclick = ()=>{
+639|          document.getElementById("q").value = text;
+640|          runSearch();
+641|        };
+642|        box.appendChild(t);
+643|      });
+644|    }
+645|
+646|    /* ----------------------------
+647|       Search trigger
+648|       ---------------------------- */
+649|    function runSearch(){
+650|      const q = document.getElementById("q").value;
+651|      const limit = parseInt(document.getElementById("limit").value,10);
+652|      const matches = findMatches(q, limit);
+653|      renderResults(matches);
+654|    }
+655|
+656|    document.getElementById("btnFind").addEventListener("click", runSearch);
+657|
+658|    document.getElementById("btnClear").addEventListener("click", ()=>{
+659|      document.getElementById("q").value = "";
+660|      renderResults([]);
+661|      document.getElementById("status").textContent = "";
+662|    });
+663|
+664|    document.getElementById("q").addEventListener("keypress", e=>{
+665|      if (e.key === "Enter") runSearch();
+666|    });
+667|
+668|    /* ----------------------------
+669|       Guided UI
+670|       ---------------------------- */
+671|    function guidedUI(scenario){
+672|      const g = document.getElementById("guided");
+673|      g.innerHTML = "";
+674|
+675|      function makeQ(id,label,opts){
+676|        const l = document.createElement("label");
+677|        l.textContent = label;
+678|
+679|        const s = document.createElement("select");
+680|        s.id = id;
+681|
+682|        const blank = document.createElement("option");
+683|        blank.value = "";
+684|        blank.textContent = "Select…";
+685|        s.appendChild(blank);
+686|
+687|        opts.forEach(o=>{
+688|          const op = document.createElement("option");
+689|          op.value = o.v;
+690|          op.textContent = o.t;
+691|          s.appendChild(op);
+692|        });
+693|
+694|        g.appendChild(l);
+695|        g.appendChild(s);
+696|        g.appendChild(document.createElement("br"));
+697|        return s;
+698|      }
+699|
+700|      function show(q){
+701|        document.getElementById("q").value = q;
+702|        runSearch();
+703|      }
+704|
+705|      if (scenario === "mva"){
+706|        const inj = makeQ("m_inj","Injuries?",[
+707|          {v:"yes",t:"Yes"},
+708|          {v:"no",t:"No"},
+709|          {v:"unk",t:"Unknown"}
+710|        ]);
+711|
+712|        const trapped = makeQ("m_trap","Trapped?",[
+713|          {v:"yes",t:"Yes (extrication needed)"},
+714|          {v:"no",t:"No"},
+715|          {v:"unk",t:"Unknown"}
+716|        ]);
+717|
+718|        const update = ()=>{
+719|          let q = "mva";
+720|          if (inj.value === "yes") q += " injuries";
+721|          if (trapped.value === "yes") q += " trapped";
+722|          show(q);
+723|        };
+724|
+725|        inj.onchange = update;
+726|        trapped.onchange = update;
+727|      }
+728|
+729|      if (scenario === "alarm"){
+730|        const what = makeQ("a_what","Alarm cause?",[
+731|          {v:"steam",t:"Steam / shower"},
+732|          {v:"toast",t:"Burnt toast / cooking"},
+733|          {v:"reset",t:"Panel reset before arrival"},
+734|          {v:"unk",t:"Unknown"}
+735|        ]);
+736|
+737|        const update = ()=>{
+738|          let q = "alarm";
+739|          if (what.value === "steam") q = "alarm steam";
+740|          if (what.value === "toast") q = "alarm toast";
+741|          if (what.value === "reset") q = "panel reset";
+742|          show(q);
+743|        };
+744|
+745|        what.onchange = update;
+746|      }
+747|
+748|      if (scenario === "veg"){
+749|        const area = makeQ("v_area","Estimated size",[
+750|          {v:"small",t:"≤ 1 hectare"},
+751|          {v:"large",t:"> 1 hectare"},
+752|          {v:"unk",t:"Unknown"}
+753|        ]);
+754|
+755|        const update = ()=>{
+756|          let q = (area.value === "large") ? "grass fire >1ha" : "small grass fire <1ha";
+757|          if (!area.value) q = "grass fire";
+758|          show(q);
+759|        };
+760|
+761|        area.onchange = update;
+762|      }
+763|
+764|      if (scenario === "structure"){
+765|        const confined = makeQ("s_conf","Confined to container/equipment?",[
+766|          {v:"yes",t:"Yes"},
+767|          {v:"no",t:"No"},
+768|          {v:"unk",t:"Unknown"}
+769|        ]);
+770|
+771|        const update = ()=>{
+772|          let q = (confined.value === "yes") ? "toast" : "building fire";
+773|          if (!confined.value) q = "building fire";
+774|          show(q);
+775|        };
+776|
+777|        confined.onchange = update;
+778|      }
+779|
+780|      if (scenario === "haz"){
+781|        const type = makeQ("h_type","Hazard type",[
+782|          {v:"gas",t:"Gas smell"},
+783|          {v:"co",t:"CO alarm"},
+784|          {v:"power",t:"Powerline down"},
+785|          {v:"spill",t:"Fuel spill"}
+786|        ]);
+787|
+788|        const update = ()=>{
+789|          let q = "";
+790|          if (type.value === "gas") q = "gas smell";
+791|          if (type.value === "co") q = "carbon monoxide";
+792|          if (type.value === "power") q = "powerline down";
+793|          if (type.value === "spill") q = "fuel spill";
+794|          show(q);
+795|        };
+796|
+797|        type.onchange = update;
+798|      }
+799|
+800|      if (scenario === "weather"){
+801|        const what = makeQ("w_what","Most relevant",[
+802|          {v:"tree",t:"Tree across road"},
+803|          {v:"general",t:"General severe weather"}
+804|        ]);
+805|
+806|        const update = ()=>{
+807|          let q = (what.value === "general") ? "severe weather" : "tree across road";
+808|          show(q);
+809|        };
+810|
+811|        what.onchange = update;
+812|      }
+813|    }
+814|
+815|    document.getElementById("scenario")
+816|      .addEventListener("change", e => guidedUI(e.target.value));
+817|
+818|    /* ----------------------------
+819|       Initialise UI
+820|       ---------------------------- */
+821|    document.addEventListener("DOMContentLoaded", ()=>{
+822|      setQuickButtons();
+823|
+824|      setChips([
+825|        "car vs pole",
+826|        "mva with injuries",
+827|        "mva trapped",
+828|        "fuel spill on road",
+829|        "alarm sounding no fire",
+830|        "panel reset before arrival",
+831|        "smoke investigation",
+832|        "smoke alarm steam",
+833|        "burnt toast",
+834|        "small grass fire <1ha",
+835|        "grass fire >1ha",
+836|        "scrub bush <1ha",
+837|        "scrub bush >1ha",
+838|        "burn off controlled",
+839|        "unauthorised burning",
+840|        "gas smell",
+841|        "carbon monoxide alarm",
+842|        "tree across road",
+843|        "powerline down"
+844|      ]);
+845|    });
+846|
+847|    renderResults([]);
+848|
+849|  </script>
+850|
+851|  <script>
+852|    if ("serviceWorker" in navigator){
+853|      window.addEventListener("load", ()=>{
+854|        navigator.serviceWorker.register("./sw.js");
+855|      });
+856|    }
+857|  </script>
+858|
+859|</body>
+860|</html>
+  
