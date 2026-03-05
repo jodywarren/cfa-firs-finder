@@ -136,7 +136,15 @@ html, body{
       vertical-align:middle;
     }
     .pill b{ color:var(--text); font-weight:650; }
-
+ /* Allow flex containers to shrink inside mobile screens */
+ .result, .left{
+  min-width:0; 
+}
+    
+    .desc, .hint, .sub{
+  overflow-wrap:anywhere;
+      word-break: break-word;
+}
     .results{ margin-top:10px; display:flex; flex-direction:column; gap:10px; }
 
     .result{
