@@ -43,12 +43,13 @@
       color:var(--text);
     }
     
-    /* Prevent horizontal scrolling on phones */
-html, body{
-  width:100%;
-  max-width:100%;
-  overflow-x:clip; /* better than hidden, doesn't create weird scrollbars */
-}
+/* Safer mobile sizing (won't clip your page) */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { width: 100%; }
+
+/* Prevent layout blowouts without chopping content */
+.wrap, .card { max-width: 100%; }
 
     header{
       padding:18px 16px 10px;
