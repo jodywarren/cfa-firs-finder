@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CFA FIRS Quick Finder (Unofficial)</title>
+  <style>
+    :root {
+      --bg:#0b0f14; --card:#111827; --muted:#9ca3af; --text:#e5e7eb; --accent:#ef4444;
+      --line:#1f2937; --good:#22c55e; --warn:#f59e0b;
+      --radius:14px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    body { margin:0; background:linear-gradient(180deg,#070a0f 0%, #0b0f14 40%, #070a0f 100%); color:var(--text); }
+    header { padding:18px 16px 10px; position:sticky; top:0; backdrop-filter: blur(10px);
+      background:rgba(11,15,20,0.72); border-bottom:1px solid var(--line); z-index:3; }
+    h1 { margin:0; font-size:18px; letter-spacing:0.2px; }
+    .sub { margin-top:6px; font-size:12px; color:var(--muted); line-height:1.35; }
+    .wrap { max-width:860px; margin:0 auto; padding:14px 14px 28px; }
+    .grid { display:grid; grid-template-columns: 1fr; gap:12px; }
+    @media (min-width: 860px) { .grid { grid-template-columns: 1.2fr 0.8fr; align-items:start; } }
+    .card { background:rgba(17,24,39,0.7); border:1px solid var(--line); border-radius:var(--radius); padding:14px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+    label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+    input, select, button, textarea {
+      width:100%; box-sizing:border-box;
+      background:#0b1220; color:var(--text);
+      border:1px solid #233047; border-radius:12px;
+      padding:12px 12px; font-size:16px;
+      outline:none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: rgba(239,68,68,0.8); box-shadow:0 0 0 4px rgba(239,68,68,0.12); }
+    .row { display:flex; gap:10px; flex-wrap:wrap; }
+    .row > * { flex: 1 1 180px; }
+    button {
+      cursor:pointer; border:1px solid rgba(239,68,68,0.65);
+      background: linear-gradient(180deg, rgba(239,68,68,0.22), rgba(239,68,68,0.08));
+      font-weight:650;
+    }
+    button.secondary {
+      border-color:#2b3750;
+      background: linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
+      color: var(--text);
+    }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:6px 10px;
+      border:1px solid #2b3750; border-radius:999px; font-size:12px; color:var(--muted); }
+    .pill b { color:var(--text); font-weight:650; }
+    .results { margin-top:10px; display:flex; flex-direction:column; gap:10px; }
+    .result {
+      border:1px solid #263249; border-radius:12px; padding:12px;
+      background: rgba(11,18,32,0.7);
+    }
+    .code { font-size:18px; font-weight:800; letter-spacing:0.3px; }
+    .desc { margin-top:6px; color:var(--text); opacity:0.95; }
+    .score { margin-top:8px; color:var(--muted); font-size:12px; }
+    .hint { font-size:12px; color:var(--muted); line-height:1.4; }
+    .k { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+    .tag { font-size:12px; color:#cbd5e1; border:1px solid #2b3750; padding:4px 8px; border-radius:999px; background:rgba(148,163,184,0.06); }
+    .warnbox {
+      border:1px solid rgba(245,158,11,0.45);
+      background: rgba(245,158,11,0.08);
+      border-radius:12px; padding:10px; color:#fde68a; font-size:12px; line-height:1.35;
+    }
+    .goodbox {
+      border:1px solid rgba(34,197,94,0.45);
+      background: rgba(34,197,94,0.08);
+      border-radius:12px; padding:10px; color:#bbf7d0; font-size:12px; line-height:1.35;
+    }
+    footer { margin-top:12px; color:var(--muted); font-size:12px; }
+    a { color:#93c5fd; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="padding:0 14px;">
+    <h1>CFA FIRS Quick Finder <span class="pill" title="Not an official CFA tool"><b>Unofficial</b> guide</span></h1>
+    <div class="sub">
+      Type what you <b>found on scene</b> (not what you were paged to). Returns the most likely FIRS codes (3–5).<br/>
+      Add details like “injuries”, “trapped”, “steam”, “toast”, “&lt;1ha”, “gas smell”, “tree down”.
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+    <section class="card">
+      <div class="row">
+        <div>
+          <label for="q">Quick search</label>
+          <input id="q" autocomplete="off" placeholder="e.g. MVA with injuries, car fire, smoke alarm steam, small grass fire, gas smell" />
+          <div class="k" id="quickChips"></div>
+        </div>
+        <div>
+          <label for="limit">Show</label>
+          <select id="limit">
+            <option value="3">Top 3</option>
+            <option value="4">Top 4</option>
+            <option value="5" selected>Top 5</option>
+          </select>
+          <div style="height:10px"></div>
+          <button id="btnFind">Find codes</button>
+          <div style="height:10px"></div>
+          <button id="btnClear" class="secondary">Clear</button>
+        </div>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="warnbox">
+        <b>Reminder:</b> This is a guide only. The reporting member must confirm the correct FIRS “type of call” based on what was found on scene.
+      </div>
+
+      <div class="results" id="results"></div>
+
+      <footer>
+        Data source: the FIRS code list you provided. You can edit/extend the code list inside this file (search for <b>DATA</b>).
+      </footer>
+    </section>
+
+    <aside class="card">
+      <h2 style="margin:0 0 10px; font-size:14px; color:#cbd5e1;">Guided mode (fewer mistakes)</h2>
+      <div class="hint">Pick a scenario. Answer 2–3 questions. Get the most likely codes.</div>
+      <div style="height:10px"></div>
+
+      <label for="scenario">Scenario</label>
+      <select id="scenario">
+        <option value="">Select…</option>
+        <option value="mva">MVA / road crash</option>
+        <option value="alarm">Alarm / false alarm / investigation</option>
+        <option value="veg">Grass / vegetation fire</option>
+        <option value="structure">Structure fire / building incident</option>
+        <option value="haz">Hazard (gas, fuel spill, powerline)</option>
+        <option value="weather">Storm / tree down</option>
+      </select>
+
+      <div id="guided" style="margin-top:12px;"></div>
+
+      <div style="height:12px"></div>
+      <div class="goodbox">
+        <b>Sharing tip:</b> Save this page to your phone home screen. For brigade use, host it on a brigade website or GitHub Pages.
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+/* ============================
+   DATA (edit this list)
+   ============================ */
+const CODES = [{"code": "352", "desc": "Vehicle accident – no injuries", "kw": ["mva", "car accident", "vehicle accident", "collision", "crash", "rtc", "traffic collision", "no injuries"]}, {"code": "352.1", "desc": "Vehicle accident – with injuries", "kw": ["mva injuries", "injury", "injured", "ambulance", "av", "with injuries", "patient"]}, {"code": "351", "desc": "Extrications of victim(s) from mobile property", "kw": ["extrication", "trapped", "pinned", "entrapment", "cut out", "hydraulic rescue", "jaws", "cannot exit", "unconscious in car"]}, {"code": "413", "desc": "Oil or other combustible liquid spill", "kw": ["oil spill", "diesel spill", "fuel spill", "petrol spill", "hydrocarbon", "spill on road", "leak on road"]}, {"code": "414", "desc": "Minor fuel or other flammable liquid spill/leak – 200 litres or less", "kw": ["minor fuel spill", "small fuel spill", "<200l", "200 litres", "minor spill"]}, {"code": "415", "desc": "Major fuel or other flammable liquid spill/leak – 201 or more litres", "kw": ["major fuel spill", ">200l", "201 litres", "tanker leak", "large spill"]}, {"code": "381", "desc": "Rescue or EMS standby", "kw": ["standby", "rescue standby", "ems standby", "coverage"]}, {"code": "111", "desc": "Fire damaging structure and contents", "kw": ["structure fire", "house fire", "building fire", "shed fire", "dwelling fire", "garage fire", "fire in building"]}, {"code": "112", "desc": "Fire damaging structure only", "kw": ["structure only", "roof fire", "wall fire", "structure damaged"]}, {"code": "113", "desc": "Fire damaging contents only", "kw": ["contents fire", "couch fire", "furniture fire", "contents only"]}, {"code": "121", "desc": "Foodstuffs burnt, confined to cooking equipment", "kw": ["burnt toast", "cooking smoke", "pan fire out", "stove smoke", "food burnt", "kitchen smoke no flame"]}, {"code": "122", "desc": "Chimney or flue fire – confined", "kw": ["chimney fire", "flue fire", "heater flue", "wood heater flue"]}, {"code": "135", "desc": "Fence fire", "kw": ["fence fire"]}, {"code": "138", "desc": "Outside cooking equipment fire (BBQ etc) – uncontrolled fires only", "kw": ["bbq fire", "barbecue fire", "spit roaster fire", "outside cooking fire"]}, {"code": "107", "desc": "Wood chip / mulch fire – roadside/median/playground etc", "kw": ["mulch fire", "woodchip fire", "roadside mulch", "median strip fire"]}, {"code": "151", "desc": "Passenger vehicle fire including buses", "kw": ["car fire", "vehicle fire", "bus fire", "automobile fire", "passenger vehicle fire"]}, {"code": "152", "desc": "Road or transport vehicle fire", "kw": ["truck fire", "transport vehicle fire", "prime mover fire", "semi fire", "delivery truck fire"]}, {"code": "157", "desc": "Off-road vehicles or mobile equipment fire", "kw": ["tractor fire", "harvester fire", "skid steer fire", "excavator fire", "machinery fire", "off road vehicle fire"]}, {"code": "173", "desc": "Small grass fire (one hectare or less)", "kw": ["grass fire", "small grass fire", "roadside grass", "<1ha", "one hectare or less", "spot fire"]}, {"code": "163", "desc": "Grass fire (more than one hectare)", "kw": [">1ha", "more than one hectare", "large grass fire", "paddock fire"]}, {"code": "172", "desc": "Scrub/bush and grass mixture (one hectare or less)", "kw": ["scrub fire", "bush grass mix", "gorse fire", "small scrub fire"]}, {"code": "162", "desc": "Scrub/bush and grass mixture (more than one hectare)", "kw": ["large scrub fire", "bushfire", "bush grass mix large"]}, {"code": "624", "desc": "Controlled burning", "kw": ["burn off", "controlled burn", "planned burn", "permit burn", "legal burn"]}, {"code": "514", "desc": "Unauthorised burning", "kw": ["unauthorised burn", "illegal burn", "burning without permit", "unattended burn"]}, {"code": "412", "desc": "Odour or gas, gas leak (domestic or LPG)", "kw": ["gas leak", "lpg leak", "gas smell", "odour of gas"]}, {"code": "447", "desc": "Carbon monoxide incident", "kw": ["co alarm", "carbon monoxide", "co incident", "co detector"]}, {"code": "435", "desc": "Power line down", "kw": ["powerline down", "power line down", "lines down", "wire down"]}, {"code": "511", "desc": "Water removal", "kw": ["flooded house", "water in building", "pump out", "water removal", "flooding in house"]}, {"code": "512", "desc": "Water or steam leak (includes open hydrants)", "kw": ["burst pipe", "water main", "hydrant open", "steam leak", "water leak"]}, {"code": "513", "desc": "Smoke or odour removal", "kw": ["smoke removal", "odour removal", "ventilate", "ppv", "fan smoke"]}, {"code": "533", "desc": "Wind storm (incl tornado/cyclone)", "kw": ["storm damage", "wind storm", "tree down", "branch down", "roof damage wind"]}, {"code": "534", "desc": "Lightning strike (no fire)", "kw": ["lightning strike", "strike no fire"]}, {"code": "535", "desc": "Severe weather or natural disaster", "kw": ["severe weather", "natural disaster", "weather event"]}, {"code": "520", "desc": "Assist police or other governmental agency (general)", "kw": ["assist police", "assist agency", "support police", "traffic control for police"]}, {"code": "521", "desc": "Assist police or other governmental agency", "kw": ["assist police", "police request"]}, {"code": "522", "desc": "Police matter", "kw": ["police matter"]}, {"code": "901", "desc": "Cover assignment, standby at fire station", "kw": ["cover assignment", "move up", "standby at station", "coverage assignment"]}, {"code": "921", "desc": "Dispatched and cancelled en-route", "kw": ["called off", "cancelled", "cancelled en route", "stop before arrival"]}, {"code": "621", "desc": "Smoke scare, odour of smoke", "kw": ["smoke sighted", "smell of smoke", "smoke investigation", "smoke scare", "unknown smoke"]}, {"code": "622", "desc": "Steam/vapour/fog/dust thought to be smoke", "kw": ["steam mistaken", "dust mistaken", "fog mistaken", "vapour mistaken", "dust"]}, {"code": "623", "desc": "Alarm sounded – no evidence of fire", "kw": ["alarm sounding", "afa", "fire alarm", "no fire", "panel reset before arrival", "alarm no fire"]}, {"code": "756", "desc": "Cooking fumes – toast or foodstuffs", "kw": ["toast", "cooking fumes", "burnt toast", "burnt food", "cooking smoke"]}, {"code": "768", "desc": "Alarm activation due to steam/sauna/steam room", "kw": ["steam", "shower steam", "sauna", "steam room"]}, {"code": "701", "desc": "Manual control point / break glass alarm activated", "kw": ["break glass", "manual call point", "mcp", "manual alarm"]}, {"code": "709", "desc": "False alarm or false call not classified", "kw": ["false alarm", "false call"]}, {"code": "711", "desc": "Malicious/mischievous false alarm", "kw": ["malicious", "mischievous", "hoax alarm"]}, {"code": "763", "desc": "Failure to notify of test", "kw": ["alarm test", "test not notified", "testing"]}, {"code": "765", "desc": "Alarm activation due to workmen or occupier activities", "kw": ["workmen", "construction dust", "works triggered alarm", "occupier activities"]}, {"code": "766", "desc": "Alarm activation due to poor building maintenance (dust/cobwebs)", "kw": ["dust", "cobwebs", "poor maintenance alarm"]}];
+
+/* ============================
+   Simple scoring matcher
+   ============================ */
+function norm(s) {
+  return (s || "").toLowerCase()
+    .replace(/[^a-z0-9\.\s<>]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function scoreEntry(query, entry) {
+  const q = norm(query);
+  if (!q) return 0;
+  let score = 0;
+  const tokens = q.split(" ");
+
+  // direct code match
+  if (q === entry.code.toLowerCase() || tokens.includes(entry.code.toLowerCase())) score += 50;
+
+  // phrase keyword match
+  for (const k of entry.kw) {
+    const kk = norm(k);
+    if (!kk) continue;
+    if (q.includes(kk)) score += 18;
+    else {
+      // token overlap
+      const kt = kk.split(" ");
+      let hits = 0;
+      for (const t of kt) if (tokens.includes(t)) hits++;
+      if (hits > 0) score += Math.min(12, hits * 4);
+    }
+  }
+
+  // slight boost for exact “starts with”
+  if (entry.desc && norm(entry.desc).startsWith(q)) score += 6;
+
+  return score;
+}
+
+function findCodes(query, limit=5) {
+  const scored = CODES
+    .map(e => ({...e, _score: scoreEntry(query, e)}))
+    .filter(e => e._score > 0)
+    .sort((a,b) => b._score - a._score);
+
+  // de-duplicate by code, keep best score
+  const seen = new Set();
+  const out = [];
+  for (const e of scored) {
+    if (seen.has(e.code)) continue;
+    seen.add(e.code);
+    out.push(e);
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
+function renderResults(items) {
+  const el = document.getElementById("results");
+  el.innerHTML = "";
+  if (!items.length) {
+    el.innerHTML = `<div class="result">
+      <div class="desc"><b>No matches yet.</b> Try a shorter phrase like “MVA”, “gas smell”, “toast”, “small grass fire”, “alarm no fire”.</div>
+      <div class="score">Tip: add qualifiers such as “injuries”, “trapped”, “steam”, “&lt;1ha”, “fuel spill”.</div>
+    </div>`;
+    return;
+  }
+  for (const it of items) {
+    const div = document.createElement("div");
+    div.className = "result";
+    div.innerHTML = `
+      <div class="code">${it.code}</div>
+      <div class="desc">${it.desc}</div>
+      <div class="score">match score: ${it._score}</div>
+    `;
+    el.appendChild(div);
+  }
+}
+
+function setChips(chips) {
+  const wrap = document.getElementById("quickChips");
+  wrap.innerHTML = "";
+  for (const c of chips) {
+    const b = document.createElement("button");
+    b.className = "tag";
+    b.type = "button";
+    b.textContent = c;
+    b.onclick = () => {
+      document.getElementById("q").value = c;
+      goFind();
+    };
+    wrap.appendChild(b);
+  }
+}
+
+function goFind() {
+  const q = document.getElementById("q").value;
+  const limit = parseInt(document.getElementById("limit").value, 10);
+  const items = findCodes(q, limit);
+  renderResults(items);
+}
+
+document.getElementById("btnFind").addEventListener("click", goFind);
+document.getElementById("btnClear").addEventListener("click", () => {
+  document.getElementById("q").value = "";
+  renderResults([]);
+});
+
+document.getElementById("q").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") goFind();
+});
+
+setChips(["MVA with injuries", "MVA trapped", "fuel spill on road", "car fire", "small grass fire <1ha", "burn off controlled", "smoke alarm steam", "burnt toast", "gas smell", "tree down storm", "powerline down"]);
+
+/* ============================
+   Guided mode (decision logic)
+   ============================ */
+function guidedUI(scenario) {
+  const host = document.getElementById("guided");
+  host.innerHTML = "";
+  if (!scenario) return;
+
+  const makeQ = (id, label, options) => {
+    const w = document.createElement("div");
+    w.style.marginBottom = "10px";
+    w.innerHTML = `<label for="${id}">${label}</label>`;
+    const s = document.createElement("select");
+    s.id = id;
+    s.innerHTML = `<option value="">Select…</option>` + options.map(o => `<option value="${o.v}">${o.t}</option>`).join("");
+    w.appendChild(s);
+    host.appendChild(w);
+    return s;
+  };
+
+  const out = document.createElement("div");
+  out.className = "results";
+  host.appendChild(out);
+
+  const show = (query) => {
+    const limit = 5;
+    const items = findCodes(query, limit);
+    out.innerHTML = "";
+    renderInto(out, items);
+  };
+
+  const renderInto = (container, items) => {
+    if (!items.length) {
+      container.innerHTML = `<div class="result"><div class="desc"><b>No guided match.</b> Use quick search instead.</div></div>`;
+      return;
+    }
+    for (const it of items) {
+      const div = document.createElement("div");
+      div.className = "result";
+      div.innerHTML = `<div class="code">${it.code}</div><div class="desc">${it.desc}</div>`;
+      container.appendChild(div);
+    }
+  };
+
+  if (scenario === "mva") {
+    const injuries = makeQ("mva_inj", "Any injuries reported/observed?", [
+      {v:"no", t:"No"},
+      {v:"yes", t:"Yes / suspected"},
+      {v:"unk", t:"Unknown"}
+    ]);
+    const trapped = makeQ("mva_trap", "Any person trapped and needs extrication?", [
+      {v:"no", t:"No"},
+      {v:"yes", t:"Yes"},
+      {v:"unk", t:"Unknown"}
+    ]);
+    const spill = makeQ("mva_spill", "Fuel/oil spill requiring management?", [
+      {v:"no", t:"No"},
+      {v:"minor", t:"Yes, minor (≤200L)"},
+      {v:"major", t:"Yes, major (≥201L)"}
+    ]);
+
+    const update = () => {
+      let q = "MVA ";
+      if (trapped.value === "yes") q += "extrication ";
+      if (injuries.value === "yes") q += "injuries ";
+      if (spill.value === "minor") q += "minor fuel spill ";
+      if (spill.value === "major") q += "major fuel spill ";
+      if (!trapped.value && !injuries.value && !spill.value) q += "vehicle accident";
+      show(q);
+    };
+    injuries.onchange = trapped.onchange = spill.onchange = update;
+  }
+
+  if (scenario === "alarm") {
+    const evidence = makeQ("a_evid", "Any evidence of fire (flame, charring, sustained ignition)?", [
+      {v:"no", t:"No"},
+      {v:"yes", t:"Yes"},
+      {v:"unk", t:"Unknown"}
+    ]);
+    const cause = makeQ("a_cause", "Most likely cause on scene", [
+      {v:"steam", t:"Steam/shower/sauna"},
+      {v:"toast", t:"Cooking fumes/toast"},
+      {v:"manual", t:"Break glass/manual call point"},
+      {v:"unknown", t:"Unknown/other"}
+    ]);
+
+    const update = () => {
+      let q = "alarm ";
+      if (evidence.value === "yes") q = "structure fire";
+      else {
+        if (cause.value === "steam") q += "steam";
+        else if (cause.value === "toast") q += "toast";
+        else if (cause.value === "manual") q += "break glass";
+        else q += "no fire";
+      }
+      show(q);
+    };
+    evidence.onchange = cause.onchange = update;
+  }
+
+  if (scenario === "veg") {
+    const area = makeQ("v_area", "Estimated size", [
+      {v:"small", t:"≤ 1 hectare"},
+      {v:"large", t:"> 1 hectare"},
+      {v:"unk", t:"Unknown"}
+    ]);
+    const mix = makeQ("v_mix", "Vegetation type", [
+      {v:"grass", t:"Grass"},
+      {v:"mix", t:"Scrub/bush + grass mix"},
+      {v:"mulch", t:"Mulch/woodchip (roadside/median)"}
+    ]);
+    const burn = makeQ("v_burn", "Was it a burn-off?", [
+      {v:"no", t:"No / uncontrolled vegetation fire"},
+      {v:"controlled", t:"Yes, controlled burning"},
+      {v:"unauth", t:"Unauthorised burning"}
+    ]);
+
+    const update = () => {
+      let q = "";
+      if (burn.value === "controlled") q = "controlled burn off";
+      else if (burn.value === "unauth") q = "unauthorised burning";
+      else {
+        if (mix.value === "mulch") q = "mulch fire";
+        else if (mix.value === "mix") q = (area.value === "large") ? "large scrub fire" : "small scrub fire";
+        else q = (area.value === "large") ? "large grass fire" : "small grass fire <1ha";
+      }
+      show(q);
+    };
+    area.onchange = mix.onchange = burn.onchange = update;
+  }
+
+  if (scenario === "structure") {
+    const confined = makeQ("s_conf", "Confined to container/equipment (no flame damage to structure)?", [
+      {v:"yes", t:"Yes (e.g. toast/pan/chimney confined)"},
+      {v:"no", t:"No (building/contents involved)"},
+      {v:"unk", t:"Unknown"}
+    ]);
+    const which = makeQ("s_which", "Most relevant", [
+      {v:"toast", t:"Cooking equipment / foodstuffs"},
+      {v:"chim", t:"Chimney/flue"},
+      {v:"building", t:"Building fire"},
+    ]);
+
+    const update = () => {
+      let q = "structure ";
+      if (confined.value === "yes") {
+        if (which.value === "chim") q = "chimney fire";
+        else q = "burnt toast";
+      } else {
+        q = "building fire structure and contents";
+      }
+      show(q);
+    };
+    confined.onchange = which.onchange = update;
+  }
+
+  if (scenario === "haz") {
+    const type = makeQ("h_type", "Hazard type", [
+      {v:"gas", t:"Gas smell / LPG leak"},
+      {v:"co", t:"Carbon monoxide alarm"},
+      {v:"spill", t:"Fuel/oil spill"},
+      {v:"power", t:"Powerline down / electrical hazard"},
+    ]);
+    const spill = makeQ("h_spill", "If spill: size", [
+      {v:"", t:"(only if spill)"},
+      {v:"minor", t:"Minor (≤200L)"},
+      {v:"major", t:"Major (≥201L)"},
+    ]);
+
+    const update = () => {
+      let q = "";
+      if (type.value === "gas") q = "gas smell";
+      else if (type.value === "co") q = "carbon monoxide";
+      else if (type.value === "power") q = "powerline down";
+      else if (type.value === "spill") q = (spill.value === "major") ? "major fuel spill" : "fuel spill on road";
+      show(q);
+    };
+    type.onchange = spill.onchange = update;
+  }
+
+  if (scenario === "weather") {
+    const what = makeQ("w_what", "Most relevant", [
+      {v:"tree", t:"Tree/branch down"},
+      {v:"roof", t:"Roof damage / wind damage"},
+      {v:"general", t:"General severe weather"},
+    ]);
+    const update = () => {
+      let q = (what.value === "general") ? "severe weather" : "wind storm tree down";
+      show(q);
+    };
+    what.onchange = update;
+  }
+}
+
+document.getElementById("scenario").addEventListener("change", (e) => guidedUI(e.target.value));
+
+// initial empty state
+renderResults([]);
+</script>
+</body>
+</html>
