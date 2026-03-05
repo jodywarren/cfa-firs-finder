@@ -1,8 +1,8 @@
 {
   "name": "FIRS FINDER",
   "short_name": "FIRS FINDER",
-  "start_url": "/cfa-firs-finder/",
-  "scope": "/cfa-firs-finder/",
+ "start_url": "./",
+"scope": "./",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
