@@ -185,8 +185,31 @@ html, body { width: 100%; max-width: 100%; overflow-x: clip; }
       box-shadow:0 0 0 4px rgba(239,68,68,0.12);
     }
 
-    .row{ display:flex; gap:10px; flex-wrap:wrap; }
-    .row > *{ flex: 1 1 180px; }
+    /* Phone-first: stack controls vertically */
+.row{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.row > *{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  flex:1 1 auto;
+}
+
+/* On wider screens, go back to side-by-side */
+@media (min-width: 760px){
+  .row{
+    flex-direction:row;
+    flex-wrap:wrap;
+  }
+
+  .row > *{
+    flex:1 1 180px;
+  }
+}
 
     button{
       cursor:pointer;
