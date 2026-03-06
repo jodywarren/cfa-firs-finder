@@ -237,15 +237,21 @@ html, body { width: 100%; max-width: 100%; overflow-x: clip; }
     }
 
     /* Quick tabs: scrollable row */
-    .tabs{
-      display:flex;
-      flex-wrap:nowrap;
-      gap:8px;
-      margin-top:10px;
-      overflow-x:auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom:6px;
-    }
+  
+   .tabs{
+  display:flex;
+  flex-wrap:nowrap;
+  gap:8px;
+  margin-top:10px;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:6px;
+  box-sizing:border-box;
+}
     .tabs::-webkit-scrollbar{ height:8px; }
     .tabs::-webkit-scrollbar-thumb{ background:#223048; border-radius:999px; }
 
@@ -274,9 +280,13 @@ html, body { width: 100%; max-width: 100%; overflow-x: clip; }
 
 /* Tabs: keep one-line chips, container scrolls */
 .tabs .tag{
-  white-space:nowrap;
+  white-space:nowrap; 
 }
-
+    
+.tabs .tag{
+  flex:0 0 auto;
+}
+    
 /* Chips: allow wrapping, no page blowout */
 .chips .tag{
   white-space:normal;       /* allow multi-line */
