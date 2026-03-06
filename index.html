@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- PWA / iOS app mode -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="application-name" content="FIRS FINDER" />
@@ -13,108 +12,74 @@
 
   <title>FIRS FINDER</title>
 
-  <!-- Icons / manifest -->
   <link rel="icon" href="icon.png" />
   <link rel="apple-touch-icon" href="icon.png" />
   <link rel="manifest" href="manifest.json" />
 
   <style>
     :root{
-      --bg:#0b0f14; --card:#111827; --muted:#9ca3af; --text:#e5e7eb; --accent:#ef4444;
-      --line:#1f2937; --good:#22c55e; --warn:#f59e0b; --radius:14px;
+      --bg:#0b0f14;
+      --card:#111827;
+      --muted:#9ca3af;
+      --text:#e5e7eb;
+      --accent:#ef4444;
+      --line:#1f2937;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --radius:14px;
 
-      /* Readability (slightly larger) */
       --fs-h1:20px;
-      --fs-sub:13.5px;
+      --fs-sub:14px;
       --fs-label:13px;
       --fs-input:17px;
-      --fs-tag:13.5px;
+      --fs-tag:14px;
       --fs-code:20px;
-      --fs-desc:15.5px;
-      --fs-hint:13.5px;
+      --fs-desc:15px;
+      --fs-hint:13px;
 
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
-                   "Apple Color Emoji", "Segoe UI Emoji";
+        "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    *{ box-sizing:border-box; }
+
+    html, body{
+      margin:0;
+      width:100%;
+      max-width:100%;
+      overflow-x:hidden;
+      background:linear-gradient(180deg,#070a0f 0%, #0b0f14 40%, #070a0f 100%);
+      color:var(--text);
     }
 
     body{
-body{
-  margin:0;
-  background:linear-gradient(180deg,#070a0f 0%, #0b0f14 40%, #070a0f 100%);
-  color:var(--text);
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-
-/* Mobile sizing safety */
-*, *::before, *::after { box-sizing:border-box; }
-
-html, body {
-  width:100%;
-  max-width:100%;
-}
-
-main.app{
-  flex:1 0 auto;
-  width:100%;
-}
-
-.appFooter{
-  flex:0 0 auto;
-  padding:14px;
-  text-align:center;
-  font-size:13px;
-  color:var(--muted);
-}
-
-/* Prevent layout blowouts */
-.wrap, .card { max-width:100%; }
-.row > * { flex:1 1 180px; min-width:0; }
-.result { min-width:0; flex-wrap:wrap; }
-.left { min-width:0; }
-.desc, .hint, .sub { overflow-wrap:anywhere; word-break:break-word; }
-
-/* Tabs may scroll horizontally, but only inside themselves */
-.tabs{
-  max-width:100%;
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-}
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
     }
-    
-/* Safer mobile sizing (won't clip your page) */
-*, *::before, *::after { box-sizing: border-box; }
-
-html, body { width: 100%; }
-/* --- Mobile width safety (no sideways scroll, no clipped content) --- */
-*, *::before, *::after { box-sizing: border-box; }
-
-html, body { width: 100%; max-width: 100%; overflow-x: clip; }
-
-/* Flex/grid children can shrink (prevents page blowouts) */
-.row > * { min-width: 0; }
-.result { min-width: 0; flex-wrap: wrap; }
-.left { min-width: 0; }
-.desc, .hint, .sub { overflow-wrap: anywhere; word-break: break-word; }
-
-/* Tabs may scroll horizontally, but only inside themselves */
-.tabs { max-width: 100%; overflow-x: auto; }
-
-/* Chips can wrap normally */
-.chips { max-width: 100%; }
-.tag { max-width: 100%; white-space: normal; }
-.tabs .tag { white-space: nowrap; }
-/* Prevent layout blowouts without chopping content */
-.wrap, .card { max-width: 100%; }
 
     header{
-      padding:18px 16px 10px;
-      position:sticky; top:0;
-      backdrop-filter: blur(10px);
-      background:rgba(11,15,20,0.72);
+      position:sticky;
+      top:0;
+      z-index:10;
+      padding:18px 12px 10px;
+      backdrop-filter:blur(10px);
+      background:rgba(11,15,20,0.78);
       border-bottom:1px solid var(--line);
-      z-index:3;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:100%;
+      margin:0;
+      padding:12px;
+    }
+
+    @media (min-width: 860px){
+      .wrap{
+        max-width:860px;
+        margin:0 auto;
+      }
     }
 
     h1{
@@ -128,37 +93,56 @@ html, body { width: 100%; max-width: 100%; overflow-x: clip; }
       font-size:var(--fs-sub);
       color:var(--muted);
       line-height:1.35;
+      overflow-wrap:anywhere;
     }
 
-.wrap{
-  width:100%;
-  max-width:100%;
-  margin:0;
-  padding:12px;
-  box-sizing:border-box;
-}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border:1px solid #2b3750;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      vertical-align:middle;
+      margin-left:8px;
+    }
 
-    .grid{ display:grid; grid-template-columns: 1fr; gap:12px; }
-    
-@media (min-width: 860px){
-  .wrap{
-    max-width:860px;
-    margin:0 auto;
-  }
+    .pill b{
+      color:var(--text);
+      font-weight:650;
+    }
 
-  .grid{
-    grid-template-columns:1.2fr 0.8fr;
-    align-items:start;
-  }
+    main.app{
+      flex:1 0 auto;
+      width:100%;
+    }
 
+    .grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+      width:100%;
+      max-width:100%;
+    }
+
+    @media (min-width: 860px){
+      .grid{
+        grid-template-columns:1.2fr 0.8fr;
+        align-items:start;
+      }
     }
 
     .card{
-      background:rgba(17,24,39,0.7);
+      width:100%;
+      max-width:100%;
+      background:rgba(17,24,39,0.72);
       border:1px solid var(--line);
       border-radius:var(--radius);
       padding:14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      box-shadow:0 10px 30px rgba(0,0,0,0.25);
+      overflow:hidden;
     }
 
     label{
@@ -170,92 +154,131 @@ html, body { width: 100%; max-width: 100%; overflow-x: clip; }
 
     input, select, button{
       width:100%;
-      box-sizing:border-box;
+      min-width:0;
       background:#0b1220;
       color:var(--text);
       border:1px solid #233047;
       border-radius:12px;
-      padding:12px 12px;
+      padding:12px;
       font-size:var(--fs-input);
       outline:none;
     }
 
     input:focus, select:focus{
-      border-color: rgba(239,68,68,0.8);
+      border-color:rgba(239,68,68,0.85);
       box-shadow:0 0 0 4px rgba(239,68,68,0.12);
     }
 
-    /* Phone-first: stack controls vertically */
-.row{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
+    .controls{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      width:100%;
+    }
 
-.row > *{
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  flex:1 1 auto;
-}
+    @media (min-width: 760px){
+      .controls{
+        display:grid;
+        grid-template-columns:1.3fr 0.7fr;
+        gap:10px;
+      }
+    }
 
-/* On wider screens, go back to side-by-side */
-@media (min-width: 760px){
-  .row{
-    flex-direction:row;
-    flex-wrap:wrap;
-  }
-
-  .row > *{
-    flex:1 1 180px;
-  }
-}
+    .control-col{
+      min-width:0;
+      max-width:100%;
+    }
 
     button{
       cursor:pointer;
       border:1px solid rgba(239,68,68,0.65);
-      background: linear-gradient(180deg, rgba(239,68,68,0.22), rgba(239,68,68,0.08));
+      background:linear-gradient(180deg, rgba(239,68,68,0.22), rgba(239,68,68,0.08));
       font-weight:650;
     }
 
     button.secondary{
       border-color:#2b3750;
-      background: linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
-      color: var(--text);
+      background:linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
+      color:var(--text);
     }
 
-    .pill{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px;
-      border:1px solid #2b3750;
-      border-radius:999px;
-      font-size:12px;
+    .status{
+      margin-top:10px;
+      font-size:var(--fs-hint);
       color:var(--muted);
-      vertical-align:middle;
+      overflow-wrap:anywhere;
     }
-    .pill b{ color:var(--text); font-weight:650; }
- /* Allow flex containers to shrink inside mobile screens */
- .result, .left{
-  min-width:0; 
-}
-    
-    .desc, .hint, .sub{
-  overflow-wrap:anywhere;
-      word-break: break-word;
-}
-    .results{ margin-top:10px; display:flex; flex-direction:column; gap:10px; }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin-top:10px;
+      overflow-x:auto;
+      overflow-y:hidden;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:6px;
+      max-width:100%;
+    }
+
+    .tabs::-webkit-scrollbar{ height:8px; }
+    .tabs::-webkit-scrollbar-thumb{
+      background:#223048;
+      border-radius:999px;
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:10px;
+      max-width:100%;
+    }
+
+    .tag{
+      width:auto;
+      max-width:100%;
+      line-height:1.2;
+      font-size:var(--fs-tag);
+      color:#cbd5e1;
+      border:1px solid #2b3750;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(148,163,184,0.06);
+      cursor:pointer;
+      white-space:normal;
+      overflow-wrap:anywhere;
+      text-align:left;
+      flex:0 0 auto;
+    }
+
+    .tabs .tag{
+      white-space:nowrap;
+    }
+
+    .results{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
 
     .result{
       border:1px solid #263249;
       border-radius:12px;
       padding:12px;
-      background: rgba(11,18,32,0.7);
-      display:flex; gap:10px;
+      background:rgba(11,18,32,0.7);
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
       align-items:flex-start;
       justify-content:space-between;
+      min-width:0;
     }
 
-    .left{ min-width:0; }
+    .left{
+      min-width:0;
+      flex:1 1 220px;
+    }
 
     .code{
       font-size:var(--fs-code);
@@ -268,96 +291,38 @@ html, body { width: 100%; max-width: 100%; overflow-x: clip; }
       font-size:var(--fs-desc);
       color:var(--text);
       opacity:0.95;
+      overflow-wrap:anywhere;
+      word-break:break-word;
     }
 
     .hint{
       font-size:var(--fs-hint);
       color:var(--muted);
       line-height:1.4;
+      overflow-wrap:anywhere;
+      word-break:break-word;
     }
 
-    /* Quick tabs: scrollable row */
-  
-   .tabs{
-  display:flex;
-  flex-wrap:nowrap;
-  gap:8px;
-  margin-top:10px;
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  overflow-x:auto;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  padding-bottom:6px;
-  box-sizing:border-box;
-}
-    .tabs::-webkit-scrollbar{ height:8px; }
-    .tabs::-webkit-scrollbar-thumb{ background:#223048; border-radius:999px; }
-
-    /* Quick phrase chips: wrap */
-    .chips{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:10px;
-    }
-
-    .tag{
-  font-size:var(--fs-tag);
-  color:#cbd5e1;
-  border:1px solid #2b3750;
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(148,163,184,0.06);
-  cursor:pointer;
-  width:auto;
-  line-height:1.2;
-
-  max-width:100%;     /* prevents page blowout */
-  white-space:normal; /* safe default: can wrap */
-}
-
-/* Tabs: keep one-line chips, container scrolls */
-.tabs .tag{
-  white-space:nowrap; 
-}
-    
-.tabs .tag{
-  flex:0 0 auto;
-}
-    
-/* Chips: allow wrapping, no page blowout */
-.chips .tag{
-  white-space:normal;       /* allow multi-line */
-  overflow-wrap:anywhere;   /* break long chunks if needed */
-  text-align:left;
-}
     .warnbox{
       border:1px solid rgba(245,158,11,0.45);
-      background: rgba(245,158,11,0.08);
+      background:rgba(245,158,11,0.08);
       border-radius:12px;
       padding:10px;
       color:#fde68a;
       font-size:var(--fs-hint);
       line-height:1.35;
+      overflow-wrap:anywhere;
     }
 
     .goodbox{
       border:1px solid rgba(34,197,94,0.45);
-      background: rgba(34,197,94,0.08);
+      background:rgba(34,197,94,0.08);
       border-radius:12px;
       padding:10px;
       color:#bbf7d0;
       font-size:var(--fs-hint);
       line-height:1.35;
-    }
-
-    footer{
-      margin-top:12px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
+      overflow-wrap:anywhere;
     }
 
     .btnCopy{
@@ -366,121 +331,140 @@ html, body { width: 100%; max-width: 100%; overflow-x: clip; }
       font-size:14px;
       border-radius:10px;
       border:1px solid #2b3750;
-      background: linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
-      color: var(--text);
+      background:linear-gradient(180deg, rgba(148,163,184,0.12), rgba(148,163,184,0.06));
+      color:var(--text);
       flex:0 0 auto;
-      cursor:pointer;
+      margin-left:auto;
+    }
+
+    .guided-group{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
     }
 
     .toast{
-      position: fixed; left: 50%; transform: translateX(-50%);
-      bottom: 16px;
-      background: rgba(17,24,39,0.95);
-      color: var(--text);
-      border: 1px solid #2b3750;
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 14px;
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:16px;
+      background:rgba(17,24,39,0.95);
+      color:var(--text);
+      border:1px solid #2b3750;
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:14px;
       display:none;
-      z-index: 999;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      z-index:999;
+      box-shadow:0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    .appFooter{
+      flex:0 0 auto;
+      padding:14px;
+      text-align:center;
+      font-size:13px;
+      color:var(--muted);
     }
   </style>
 </head>
-
 <body>
   <header>
-    <div class="wrap" style="padding:0 14px;">
+    <div class="wrap" style="padding-top:0; padding-bottom:0;">
       <h1>
         FIRS FINDER
         <span class="pill" title="Not an official CFA tool"><b>Unofficial</b> guide</span>
       </h1>
       <div class="sub">
-        Type what you <b>found on scene</b> (not paged to). Returns the most likely FIRS codes (3–5).<br/>
+        Type what you <b>found on scene</b> (not paged to). Returns the most likely FIRS codes (3–5).<br />
         Try: “car vs pole”, “panel reset”, “burnt toast”, “steam”, “tree across road”, “gas smell”, “&lt;1ha”.
       </div>
     </div>
   </header>
 
-  <div class="wrap">
-    <div class="grid">
+  <main class="app">
+    <div class="wrap">
+      <div class="grid">
 
-      <section class="card">
-        <div class="row">
-          <div>
-            <label for="q">Quick search</label>
-            <input id="q" autocomplete="off"
-                   placeholder="e.g. car vs pole, alarm reset, small grass fire <1ha, gas smell, tree across road" />
+        <section class="card">
+          <div class="controls">
+            <div class="control-col">
+              <label for="q">Quick search</label>
+              <input id="q" autocomplete="off" placeholder="e.g. car vs pole, alarm reset, gas smell" />
 
-            <!-- Quick tabs -->
-            <div class="tabs" id="quickButtons"></div>
+              <div class="tabs" id="quickButtons"></div>
+              <div class="chips" id="quickChips"></div>
+              <div class="status" id="status"></div>
+            </div>
 
-            <!-- Quick phrase chips -->
-            <div class="chips" id="quickChips"></div>
+            <div class="control-col">
+              <label for="limit">Show</label>
+              <select id="limit">
+                <option value="3">Top 3</option>
+                <option value="4">Top 4</option>
+                <option value="5" selected>Top 5</option>
+              </select>
 
-            <div class="hint" id="status" style="margin-top:10px;"></div>
+              <div style="height:10px"></div>
+              <button id="btnFind" type="button">Find codes</button>
+
+              <div style="height:10px"></div>
+              <button id="btnClear" class="secondary" type="button">Clear</button>
+            </div>
           </div>
 
-          <div>
-            <label for="limit">Show</label>
-            <select id="limit">
-              <option value="3">Top 3</option>
-              <option value="4">Top 4</option>
-              <option value="5" selected>Top 5</option>
+          <div style="height:12px"></div>
+
+          <div class="warnbox">
+            <b>Reminder:</b> Guide only. Reporting member confirms the correct “type of call” based on what was found on scene.
+          </div>
+
+          <div class="results" id="results"></div>
+        </section>
+
+        <aside class="card">
+          <h2 style="margin:0 0 10px; font-size:18px; color:#cbd5e1;">Guided mode (fewer mistakes)</h2>
+          <div class="hint">Pick a scenario. Answer 2–3 questions. Get the most likely codes.</div>
+
+          <div style="height:10px"></div>
+
+          <div class="guided-group">
+            <label for="scenario">Scenario</label>
+            <select id="scenario">
+              <option value="">Select…</option>
+              <option value="mva">MVA / road crash</option>
+              <option value="alarm">Alarm / false alarm / investigation</option>
+              <option value="veg">Grass / vegetation fire</option>
+              <option value="structure">Structure fire / building incident</option>
+              <option value="haz">Hazard (gas, fuel spill, powerline)</option>
+              <option value="weather">Storm / tree down</option>
             </select>
-            <div style="height:10px"></div>
-            <button id="btnFind" type="button">Find codes</button>
-            <div style="height:10px"></div>
-            <button id="btnClear" class="secondary" type="button">Clear</button>
+
+            <div id="guided" style="margin-top:4px;"></div>
           </div>
-        </div>
 
-        <div style="height:12px"></div>
+          <div style="height:12px"></div>
 
-        <div class="warnbox">
-          <b>Reminder:</b> Guide only. Reporting member confirms the correct “type of call” based on what was found on scene.
-        </div>
-
-        <div class="results" id="results"></div>
-
-      <aside class="card">
-        <h2 style="margin:0 0 10px; font-size:15px; color:#cbd5e1;">Guided mode (fewer mistakes)</h2>
-        <div class="hint">Pick a scenario. Answer 2–3 questions. Get the most likely codes.</div>
-        <div style="height:10px"></div>
-
-        <label for="scenario">Scenario</label>
-        <select id="scenario">
-          <option value="">Select…</option>
-          <option value="mva">MVA / road crash</option>
-          <option value="alarm">Alarm / false alarm / investigation</option>
-          <option value="veg">Grass / vegetation fire</option>
-          <option value="structure">Structure fire / building incident</option>
-          <option value="haz">Hazard (gas, fuel spill, powerline)</option>
-          <option value="weather">Storm / tree down</option>
-        </select>
-
-        <div id="guided" style="margin-top:12px;"></div>
-
-        <div style="height:12px"></div>
-        <div class="goodbox">
-          <b>Brigade use:</b> Share the link. Members “Add to Home screen”. Keep it unofficial and “guide only”.
-        </div>
-            </aside>
+          <div class="goodbox">
+            <b>Brigade use:</b> Share the link. Members “Add to Home screen”. Keep it unofficial and “guide only”.
+          </div>
+        </aside>
 
       </div>
     </div>
   </main>
 
   <footer class="appFooter">
-    Created by <b>Jody Tuuta</b> (unofficialv3).
+    Created by <b>Jody Tuuta</b> (unofficial).
   </footer>
 
   <div class="toast" id="toast">Copied</div>
 
   <script>
     "use strict";
-const RAW_CODE_LIST = `
 
+    const RAW_CODE_LIST = `
+Code Type of Call
 Type of incident undetermined
 000 Type of incident undetermined
 008 Type of incident not reported due to industrial/political action
@@ -810,9 +794,7 @@ Other Situations
 Did Not Arrive – Called Off
 921 Dispatched and cancelled en-route
 `;
-    /* ----------------------------
-       Synonyms / query helpers
-       ---------------------------- */
+
     const SYN = [
       ["mva", ["rtc","crash","collision","car accident","vehicle accident","car vs","vehicle vs","t-bone","rear end","rollover"]],
       ["injuries", ["injured","patient","casualty","bleeding","unconscious"]],
@@ -828,12 +810,9 @@ Did Not Arrive – Called Off
       ["gas", ["gas smell","odour of gas","lpg","gas leak"]],
       ["co", ["carbon monoxide","co alarm","co detector"]],
       ["tree", ["tree down","tree across","branch down","fallen tree","tree on road"]],
-      ["powerline", ["power line down","lines down","wire down","live wires","powerline down"]],
+      ["powerline", ["power line down","lines down","wire down","live wires","powerline down"]]
     ];
 
-    /* ----------------------------
-       Quick tabs (scroll row)
-       ---------------------------- */
     const QUICK = [
       {label:"MVA", q:"mva"},
       {label:"MVA injuries", q:"mva injuries"},
@@ -852,12 +831,9 @@ Did Not Arrive – Called Off
       {label:"Scrub/Bush <1ha", q:"scrub bush <1ha"},
       {label:"Scrub/Bush >1ha", q:"scrub bush >1ha"},
       {label:"Controlled burn", q:"controlled burn off"},
-      {label:"Unauthorised burn", q:"unauthorised burning"},
+      {label:"Unauthorised burn", q:"unauthorised burning"}
     ];
 
-    /* ----------------------------
-       Utilities
-       ---------------------------- */
     function norm(s){
       return (s || "").toLowerCase()
         .replace(/[^a-z0-9\.\s<>]/g, " ")
@@ -878,26 +854,26 @@ Did Not Arrive – Called Off
             break;
           }
         }
-     }
+      }
 
       if ((base.includes("car vs") || base.includes("vehicle vs")) && !out.includes("mva")) out += " mva";
       if (base.includes("panel") && base.includes("reset") && !out.includes("alarm")) out += " alarm no fire";
       return out;
     }
 
-    function toast(msg){
+    function showToast(msg){
       const t = document.getElementById("toast");
       if (!t) return;
       t.textContent = msg || "Copied";
       t.style.display = "block";
-      clearTimeout(toast._timer);
-      toast._timer = setTimeout(()=>{ t.style.display = "none"; }, 1200);
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => { t.style.display = "none"; }, 1200);
     }
 
     async function copyText(text){
       try{
         await navigator.clipboard.writeText(text);
-        toast("Copied");
+        showToast("Copied");
       }catch(_e){
         const ta = document.createElement("textarea");
         ta.value = text;
@@ -905,94 +881,99 @@ Did Not Arrive – Called Off
         ta.select();
         document.execCommand("copy");
         ta.remove();
-        toast("Copied");
+        showToast("Copied");
       }
-    }
-
-    /* ----------------------------
-       Parsing code list
-       ---------------------------- */
-    function parseCodes(raw){
-      const lines = (raw || "")
-        .split(/\r?\n/)
-        .map(l => l.trim())
-        .filter(Boolean);
-
-      const out = [];
-      const seen = new Set();
-
-      // forgiving: code then separator then description
-      const re = /(\d{3}(?:\.\d+)?)[\s\-–]+(.+)/;
-
-      for (const line of lines){
-        if (/^code\b/i.test(line)) continue;
-        if (/^type of call\b/i.test(line)) continue;
-        if (/^service delivery reporting\b/i.test(line)) continue;
-        if (/^firs codes/i.test(line)) continue;
-
-        const m = line.match(re);
-        if (!m) continue;
-
-        const code = m[1];
-        let desc = (m[2] || "").trim().replace(/\s{2,}/g, " ");
-
-        if (!/^\d{3}(\.\d+)?$/.test(code)) continue;
-        if (!desc) continue;
-        if (seen.has(code)) continue;
-
-        seen.add(code);
-        out.push({ code, desc, kw: buildKeywords(code, desc) });
-      }
-      return out;
     }
 
     function buildKeywords(code, desc){
       const d = (desc || "").toLowerCase();
       const kws = new Set([code.toLowerCase()]);
 
-      d.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).forEach(w=>{
-        if (w.length >= 3) kws.add(w);
+      d.replace(/[^a-z0-9<>\s]/g, " ").split(/\s+/).forEach(w => {
+        if (w.length >= 3 || w === "<1ha" || w === ">1ha") kws.add(w);
       });
 
-      // operational slang helpers
       if (code.startsWith("35")) { kws.add("mva"); kws.add("crash"); kws.add("collision"); kws.add("rtc"); }
       if (code === "351") { kws.add("extrication"); kws.add("trapped"); kws.add("entrapment"); kws.add("jaws"); }
       if (code === "352") { kws.add("mva"); kws.add("no injuries"); }
       if (code === "352.1") { kws.add("mva"); kws.add("injuries"); kws.add("injured"); kws.add("patient"); }
+
       if (code === "623") { kws.add("alarm"); kws.add("afa"); kws.add("no fire"); kws.add("fip"); }
       if (code === "768") { kws.add("steam"); kws.add("shower"); kws.add("sauna"); }
-      if (code === "756") { kws.add("toast"); kws.add("cooking"); kws.add("fumes"); }
-      
+      if (code === "756" || code === "121") { kws.add("toast"); kws.add("cooking"); kws.add("burnt toast"); }
+
       if (code === "621") { kws.add("smoke"); kws.add("investigation"); kws.add("smoke scare"); }
       if (code === "622") { kws.add("steam"); kws.add("vapour"); kws.add("dust"); }
 
-      // vegetation helpers
       if (code === "173") { kws.add("<1ha"); kws.add("small grass"); kws.add("roadside"); kws.add("grass"); }
       if (code === "163") { kws.add(">1ha"); kws.add("large grass"); kws.add("paddock"); kws.add("grass"); }
-
-      if (code === "172") { kws.add("<1ha"); kws.add("small scrub"); kws.add("bush"); kws.add("scrub"); kws.add("bush mix"); }
-      if (code === "162") { kws.add(">1ha"); kws.add("large scrub"); kws.add("bush"); kws.add("scrub"); kws.add("bush mix"); }
+      if (code === "172") { kws.add("<1ha"); kws.add("small scrub"); kws.add("bush"); kws.add("scrub"); }
+      if (code === "162") { kws.add(">1ha"); kws.add("large scrub"); kws.add("bush"); kws.add("scrub"); }
 
       if (code === "624") { kws.add("burnoff"); kws.add("controlled burn"); kws.add("permit burn"); }
       if (code === "514") { kws.add("unauthorised"); kws.add("illegal burn"); kws.add("burning"); }
 
-      // hazard helpers
       if (code === "412") { kws.add("gas"); kws.add("lpg"); kws.add("gas smell"); kws.add("gas leak"); }
       if (code === "447") { kws.add("co"); kws.add("carbon monoxide"); kws.add("co alarm"); }
       if (code === "435") { kws.add("powerline"); kws.add("wire down"); kws.add("lines down"); kws.add("power line"); }
-      if (code === "414") { kws.add("fuel spill"); kws.add("petrol"); kws.add("diesel"); kws.add("oil spill"); }
+      if (code === "414" || code === "413") { kws.add("fuel spill"); kws.add("petrol"); kws.add("diesel"); kws.add("oil spill"); }
 
-      // weather helpers
       if (code === "533") { kws.add("storm"); kws.add("wind"); kws.add("storm damage"); }
       if (code === "544") { kws.add("telecom"); kws.add("cable down"); kws.add("phone line"); }
 
       return Array.from(kws);
     }
-      const CODES = parseCodes(RAW_CODE_LIST);
-    
-    /* ----------------------------
-       Search scoring
-       ---------------------------- */
+
+    function parseCodes(raw){
+      const lines = (raw || "")
+        .split(/\r?\n/)
+        .map(l => l.trim());
+
+      const out = [];
+      const seen = new Set();
+      const codeRe = /^(\d{3}(?:\.\d+)?)[\s\-–]+(.+)$/;
+
+      let current = null;
+
+      function flush(){
+        if (!current) return;
+        const code = current.code;
+        const desc = current.parts.join(" ").replace(/\s{2,}/g, " ").trim();
+        if (!desc || seen.has(code)) {
+          current = null;
+          return;
+        }
+        seen.add(code);
+        out.push({ code, desc, kw: buildKeywords(code, desc) });
+        current = null;
+      }
+
+      for (const line of lines){
+        if (!line) continue;
+
+        const low = line.toLowerCase();
+        if (low === "code type of call") continue;
+        if (low.startsWith("service delivery reporting")) continue;
+        if (low.startsWith("firs codes")) continue;
+        if (low.startsWith("action taken")) continue;
+        if (/^\d+\s+of\s+\d+$/i.test(low)) continue;
+        if (/^\d+\s+lakeside\s+drive/i.test(low)) continue;
+
+        const match = line.match(codeRe);
+        if (match){
+          flush();
+          current = { code: match[1], parts: [match[2]] };
+        } else if (current){
+          current.parts.push(line);
+        }
+      }
+
+      flush();
+      return out;
+    }
+
+    const CODES = parseCodes(RAW_CODE_LIST);
+
     function score(query, rec){
       const q = expandQuery(query);
       if (!q) return 0;
@@ -1001,11 +982,20 @@ Did Not Arrive – Called Off
       let s = 0;
 
       for (const w of words){
-        if (rec.kw.includes(w)) s += 2;
+        if (rec.kw.includes(w)) s += 3;
         if (rec.desc.toLowerCase().includes(w)) s += 1;
       }
 
-      if (q.includes(rec.code)) s += 5;
+      if (q.includes(rec.code)) s += 8;
+
+      if (q.includes("toast") && (rec.code === "756" || rec.code === "121")) s += 12;
+      if (q.includes("steam") && rec.code === "768") s += 12;
+      if (q.includes("gas") && rec.code === "412") s += 12;
+      if (q.includes("powerline") && rec.code === "435") s += 12;
+      if (q.includes("trapped") && rec.code === "351") s += 12;
+      if (q.includes("injuries") && rec.code === "352.1") s += 12;
+      if (q.includes("<1ha") && rec.code === "173") s += 12;
+      if (q.includes(">1ha") && rec.code === "163") s += 12;
 
       return s;
     }
@@ -1014,33 +1004,30 @@ Did Not Arrive – Called Off
       const q = expandQuery(query);
       if (!q) return [];
 
-      const scored = CODES.map(c => ({
-        code: c.code,
-        desc: c.desc,
-        score: score(q, c)
-      }));
-
-      scored.sort((a,b)=> b.score - a.score);
-
-      return scored.filter(r => r.score > 0).slice(0, limit);
+      return CODES
+        .map(c => ({
+          code: c.code,
+          desc: c.desc,
+          score: score(q, c)
+        }))
+        .filter(r => r.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, limit);
     }
 
-    /* ----------------------------
-       UI rendering
-       ---------------------------- */
     function renderResults(list){
       const el = document.getElementById("results");
       const status = document.getElementById("status");
-
       el.innerHTML = "";
+
       if (!list.length){
-        status.textContent = "No matches yet. Try different words.";
+        status.textContent = `Parsed codes: ${CODES.length}. No matches yet. Try different words.`;
         return;
       }
 
-      status.textContent = list.length + " possible match(es).";
+      status.textContent = `Parsed codes: ${CODES.length}. ${list.length} possible match(es).`;
 
-      list.forEach(r=>{
+      list.forEach(r => {
         const row = document.createElement("div");
         row.className = "result";
 
@@ -1060,28 +1047,26 @@ Did Not Arrive – Called Off
 
         const btn = document.createElement("button");
         btn.className = "btnCopy";
+        btn.type = "button";
         btn.textContent = "Copy";
-        btn.onclick = () => copyText(r.code);
+        btn.onclick = () => copyText(`${r.code} – ${r.desc}`);
 
         row.appendChild(left);
         row.appendChild(btn);
-
         el.appendChild(row);
       });
     }
 
-    /* ----------------------------
-       Quick buttons
-       ---------------------------- */
-    function setQuickButtons(){
+      function setQuickButtons(){
       const box = document.getElementById("quickButtons");
       box.innerHTML = "";
 
-      QUICK.forEach(item=>{
+      QUICK.forEach(item => {
         const b = document.createElement("button");
         b.className = "tag";
+        b.type = "button";
         b.textContent = item.label;
-        b.onclick = ()=>{
+        b.onclick = () => {
           document.getElementById("q").value = item.q;
           runSearch();
         };
@@ -1089,18 +1074,16 @@ Did Not Arrive – Called Off
       });
     }
 
-    /* ----------------------------
-       Phrase chips
-       ---------------------------- */
     function setChips(list){
       const box = document.getElementById("quickChips");
       box.innerHTML = "";
 
-      list.forEach(text=>{
+      list.forEach(text => {
         const t = document.createElement("button");
         t.className = "tag";
+        t.type = "button";
         t.textContent = text;
-        t.onclick = ()=>{
+        t.onclick = () => {
           document.getElementById("q").value = text;
           runSearch();
         };
@@ -1108,182 +1091,167 @@ Did Not Arrive – Called Off
       });
     }
 
-    /* ----------------------------
-       Search trigger
-       ---------------------------- */
     function runSearch(){
       const q = document.getElementById("q").value;
-      const limit = parseInt(document.getElementById("limit").value,10);
-      const matches = findMatches(q, limit);
-      renderResults(matches);
+      const limit = parseInt(document.getElementById("limit").value, 10) || 5;
+      renderResults(findMatches(q, limit));
     }
 
-    document.getElementById("btnFind").addEventListener("click", runSearch);
+    function makeGuidedSelect(id, labelText, options){
+      const wrap = document.createElement("div");
 
-    document.getElementById("btnClear").addEventListener("click", ()=>{
-      document.getElementById("q").value = "";
-      renderResults([]);
-      document.getElementById("status").textContent = "";
-    });
+      const label = document.createElement("label");
+      label.setAttribute("for", id);
+      label.textContent = labelText;
 
-    document.getElementById("q").addEventListener("keypress", e=>{
-      if (e.key === "Enter") runSearch();
-    });
+      const select = document.createElement("select");
+      select.id = id;
 
-    /* ----------------------------
-       Guided UI
-       ---------------------------- */
+      const blank = document.createElement("option");
+      blank.value = "";
+      blank.textContent = "Select…";
+      select.appendChild(blank);
+
+      options.forEach(opt => {
+        const o = document.createElement("option");
+        o.value = opt.v;
+        o.textContent = opt.t;
+        select.appendChild(o);
+      });
+
+      wrap.appendChild(label);
+      wrap.appendChild(select);
+      return { wrap, select };
+    }
+
     function guidedUI(scenario){
       const g = document.getElementById("guided");
       g.innerHTML = "";
 
-      function makeQ(id,label,opts){
-        const l = document.createElement("label");
-        l.textContent = label;
-
-        const s = document.createElement("select");
-        s.id = id;
-
-        const blank = document.createElement("option");
-        blank.value = "";
-        blank.textContent = "Select…";
-        s.appendChild(blank);
-
-        opts.forEach(o=>{
-          const op = document.createElement("option");
-          op.value = o.v;
-          op.textContent = o.t;
-          s.appendChild(op);
-        });
-
-        g.appendChild(l);
-        g.appendChild(s);
-        g.appendChild(document.createElement("br"));
-        return s;
-      }
-
-      function show(q){
+      const showQuery = (q) => {
         document.getElementById("q").value = q;
         runSearch();
-      }
+      };
+
+      if (!scenario) return;
 
       if (scenario === "mva"){
-        const inj = makeQ("m_inj","Injuries?",[
-          {v:"yes",t:"Yes"},
-          {v:"no",t:"No"},
-          {v:"unk",t:"Unknown"}
+        const inj = makeGuidedSelect("m_inj", "Injuries?", [
+          {v:"yes", t:"Yes"},
+          {v:"no", t:"No"},
+          {v:"unk", t:"Unknown"}
         ]);
 
-        const trapped = makeQ("m_trap","Trapped?",[
-          {v:"yes",t:"Yes (extrication needed)"},
-          {v:"no",t:"No"},
-          {v:"unk",t:"Unknown"}
+        const trapped = makeGuidedSelect("m_trap", "Trapped?", [
+          {v:"yes", t:"Yes (extrication needed)"},
+          {v:"no", t:"No"},
+          {v:"unk", t:"Unknown"}
         ]);
 
-        const update = ()=>{
+        const update = () => {
           let q = "mva";
-          if (inj.value === "yes") q += " injuries";
-          if (trapped.value === "yes") q += " trapped";
-          show(q);
+          if (inj.select.value === "yes") q += " injuries";
+          if (trapped.select.value === "yes") q += " trapped";
+          showQuery(q);
         };
 
-        inj.onchange = update;
-        trapped.onchange = update;
+        inj.select.onchange = update;
+        trapped.select.onchange = update;
+
+        g.appendChild(inj.wrap);
+        g.appendChild(document.createElement("div")).style.height = "10px";
+        g.appendChild(trapped.wrap);
       }
 
       if (scenario === "alarm"){
-        const what = makeQ("a_what","Alarm cause?",[
-          {v:"steam",t:"Steam / shower"},
-          {v:"toast",t:"Burnt toast / cooking"},
-          {v:"reset",t:"Panel reset before arrival"},
-          {v:"unk",t:"Unknown"}
+        const what = makeGuidedSelect("a_what", "Alarm cause?", [
+          {v:"steam", t:"Steam / shower"},
+          {v:"toast", t:"Burnt toast / cooking"},
+          {v:"reset", t:"Panel reset before arrival"},
+          {v:"unk", t:"Unknown"}
         ]);
 
-        const update = ()=>{
+        what.select.onchange = () => {
           let q = "alarm";
-          if (what.value === "steam") q = "alarm steam";
-          if (what.value === "toast") q = "alarm toast";
-          if (what.value === "reset") q = "panel reset";
-          show(q);
+          if (what.select.value === "steam") q = "alarm steam";
+          if (what.select.value === "toast") q = "alarm toast";
+          if (what.select.value === "reset") q = "panel reset";
+          showQuery(q);
         };
 
-        what.onchange = update;
+        g.appendChild(what.wrap);
       }
 
       if (scenario === "veg"){
-        const area = makeQ("v_area","Estimated size",[
-          {v:"small",t:"≤ 1 hectare"},
-          {v:"large",t:"> 1 hectare"},
-          {v:"unk",t:"Unknown"}
+        const area = makeGuidedSelect("v_area", "Estimated size", [
+          {v:"small", t:"≤ 1 hectare"},
+          {v:"large", t:"> 1 hectare"},
+          {v:"unk", t:"Unknown"}
         ]);
 
-        const update = ()=>{
-          let q = (area.value === "large") ? "grass fire >1ha" : "small grass fire <1ha";
-          if (!area.value) q = "grass fire";
-          show(q);
+        area.select.onchange = () => {
+          let q = "grass fire";
+          if (area.select.value === "small") q = "small grass fire <1ha";
+          if (area.select.value === "large") q = "grass fire >1ha";
+          showQuery(q);
         };
 
-        area.onchange = update;
+        g.appendChild(area.wrap);
       }
 
       if (scenario === "structure"){
-        const confined = makeQ("s_conf","Confined to container/equipment?",[
-          {v:"yes",t:"Yes"},
-          {v:"no",t:"No"},
-          {v:"unk",t:"Unknown"}
+        const conf = makeGuidedSelect("s_conf", "Confined to container/equipment?", [
+          {v:"yes", t:"Yes"},
+          {v:"no", t:"No"},
+          {v:"unk", t:"Unknown"}
         ]);
 
-        const update = ()=>{
-          let q = (confined.value === "yes") ? "toast" : "building fire";
-          if (!confined.value) q = "building fire";
-          show(q);
+        conf.select.onchange = () => {
+          let q = "building fire";
+          if (conf.select.value === "yes") q = "toast";
+          showQuery(q);
         };
 
-        confined.onchange = update;
+        g.appendChild(conf.wrap);
       }
 
       if (scenario === "haz"){
-        const type = makeQ("h_type","Hazard type",[
-          {v:"gas",t:"Gas smell"},
-          {v:"co",t:"CO alarm"},
-          {v:"power",t:"Powerline down"},
-          {v:"spill",t:"Fuel spill"}
+        const type = makeGuidedSelect("h_type", "Hazard type", [
+          {v:"gas", t:"Gas smell"},
+          {v:"co", t:"CO alarm"},
+          {v:"power", t:"Powerline down"},
+          {v:"spill", t:"Fuel spill"}
         ]);
 
-        const update = ()=>{
+        type.select.onchange = () => {
           let q = "";
-          if (type.value === "gas") q = "gas smell";
-          if (type.value === "co") q = "carbon monoxide";
-          if (type.value === "power") q = "powerline down";
-          if (type.value === "spill") q = "fuel spill";
-          show(q);
+          if (type.select.value === "gas") q = "gas smell";
+          if (type.select.value === "co") q = "carbon monoxide";
+          if (type.select.value === "power") q = "powerline down";
+          if (type.select.value === "spill") q = "fuel spill";
+          showQuery(q);
         };
 
-        type.onchange = update;
+        g.appendChild(type.wrap);
       }
 
       if (scenario === "weather"){
-        const what = makeQ("w_what","Most relevant",[
-          {v:"tree",t:"Tree across road"},
-          {v:"general",t:"General severe weather"}
+        const what = makeGuidedSelect("w_what", "Most relevant", [
+          {v:"tree", t:"Tree across road"},
+          {v:"general", t:"General severe weather"}
         ]);
 
-        const update = ()=>{
-          let q = (what.value === "general") ? "severe weather" : "tree across road";
-          show(q);
+        what.select.onchange = () => {
+          let q = "tree across road";
+          if (what.select.value === "general") q = "severe weather";
+          showQuery(q);
         };
 
-        what.onchange = update;
+        g.appendChild(what.wrap);
       }
     }
 
-    document.getElementById("scenario")
-      .addEventListener("change", e => guidedUI(e.target.value));
-
-    /* ----------------------------
-       Initialise UI
-       ---------------------------- */
-    document.addEventListener("DOMContentLoaded", ()=>{
+    document.addEventListener("DOMContentLoaded", () => {
       setQuickButtons();
 
       setChips([
@@ -1307,20 +1275,32 @@ Did Not Arrive – Called Off
         "tree across road",
         "powerline down"
       ]);
+
+      document.getElementById("btnFind").addEventListener("click", runSearch);
+
+      document.getElementById("btnClear").addEventListener("click", () => {
+        document.getElementById("q").value = "";
+        renderResults([]);
+      });
+
+      document.getElementById("q").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") runSearch();
+      });
+
+      document.getElementById("scenario").addEventListener("change", (e) => {
+        guidedUI(e.target.value);
+      });
+
+      renderResults([]);
     });
-
-    renderResults([]);
-
   </script>
 
   <script>
     if ("serviceWorker" in navigator){
-      window.addEventListener("load", ()=>{
+      window.addEventListener("load", () => {
         navigator.serviceWorker.register("./sw.js");
       });
     }
   </script>
-
 </body>
 </html>
-  
